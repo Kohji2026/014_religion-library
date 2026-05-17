@@ -1,0 +1,10 @@
+# 機密情報ファイル（GitHubに絶対上げない）
+.env
+.env.*
+credentials.json
+*.pem
+*.key
+*.p12
+*.pfx
+secret.json
+secrets/

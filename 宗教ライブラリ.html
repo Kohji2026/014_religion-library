@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🕌 宗教総合ライブラリ</title>
+<style>
+/* ===== リセット & 基本 ===== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --cls-一神教:    #D85A30;
+  --cls-多神教:    #1D9E75;
+  --cls-仏教系:    #378ADD;
+  --cls-日本の新宗教: #7F77DD;
+  --cls-その他:    #888780;
+  --cls-無神論的宗教: #B07A3C;
+  --cls-一神教-bg:    #FAECE7;
+  --cls-多神教-bg:    #E1F5EE;
+  --cls-仏教系-bg:    #E6F1FB;
+  --cls-日本の新宗教-bg: #EEEDFE;
+  --cls-その他-bg:    #F1EFE8;
+  --cls-無神論的宗教-bg: #F5EDDE;
+  --bg:     #FAFAF9;
+  --bg2:    #F1EFE8;
+  --bg3:    #FFFFFF;
+  --border: #E0DEDB;
+  --text:   #1A1918;
+  --text2:  #6B6965;
+  --text3:  #9B9793;
+  --accent: #534AB7;
+  --accent-bg: #EEEDFE;
+  --radius: 8px;
+  --shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+html, body { height: 100%; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Hiragino Sans", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.6;
+}
+a { color: inherit; text-decoration: none; }
+a:hover { color: var(--accent); text-decoration: underline; }
+button { font-family: inherit; cursor: pointer; }
+
+/* ===== レイアウト ===== */
+#app { display: flex; flex-direction: column; height: 100vh; }
+
+/* ===== ヘッダー ===== */
+#header {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 16px;
+  background: var(--bg3);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+#logo { font-size: 16px; font-weight: 600; white-space: nowrap; }
+#logo span { color: var(--accent); }
+
+.tab-bar {
+  display: flex; gap: 2px;
+  background: var(--bg2);
+  border-radius: 8px;
+  padding: 3px;
+}
+.tab-btn {
+  background: none; border: none;
+  padding: 5px 14px; border-radius: 6px;
+  font-size: 13px; color: var(--text2);
+  transition: background .15s, color .15s;
+}
+.tab-btn.active {
+  background: var(--bg3); color: var(--text);
+  font-weight: 500;
+  box-shadow: 0 0 0 1px var(--border);
+}
+.tab-btn:hover:not(.active) { background: var(--bg3); }
+
+#search-box {
+  margin-left: auto;
+  display: flex; align-items: center; gap: 6px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 5px 10px;
+  background: var(--bg3);
+}
+#search-box input {
+  border: none; background: none; outline: none;
+  font-family: inherit; font-size: 13px; color: var(--text);
+  width: 200px;
+}
+#search-box input::placeholder { color: var(--text3); }
+#search-clear {
+  display: none; background: none; border: none;
+  color: var(--text3); font-size: 16px; line-height: 1;
+  padding: 0 2px; cursor: pointer; border-radius: 50%;
+  width: 18px; height: 18px; text-align: center;
+}
+#search-clear:hover { color: var(--text); background: var(--bg2); }
+
+/* ===== ステータスバー ===== */
+#stats-bar {
+  display: flex; gap: 8px; padding: 8px 16px;
+  background: var(--bg2); border-bottom: 1px solid var(--border);
+  flex-shrink: 0; flex-wrap: wrap;
+}
+.stat-chip {
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: 20px; padding: 3px 12px;
+  font-size: 12px; color: var(--text2);
+}
+.stat-chip strong { color: var(--accent); font-weight: 600; }
+
+/* ===== ビュー共通 ===== */
+.view { flex: 1; overflow: hidden; display: none; }
+.view.active { display: flex; }
+
+/* ===== 宗教ビュー ===== */
+#view-religion { flex-direction: row; }
+
+/* サイドバー */
+#sidebar {
+  width: 220px; flex-shrink: 0;
+  border-right: 1px solid var(--border);
+  display: flex; flex-direction: column;
+  background: var(--bg3);
+}
+#sidebar-header {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg2);
+  display: flex; align-items: center; justify-content: space-between;
+  flex-shrink: 0;
+}
+#sidebar-header span { font-size: 12px; font-weight: 500; color: var(--text2); }
+#sidebar-sort {
+  font-size: 11px; color: var(--text3);
+  background: none; border: none;
+  cursor: pointer; padding: 2px 4px;
+}
+#sidebar-sort:hover { color: var(--accent); }
+
+#religion-list { flex: 1; overflow-y: auto; }
+.religion-item {
+  display: flex; align-items: center; gap: 6px;
+  padding: 7px 12px;
+  cursor: pointer;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+  transition: background .1s;
+}
+.religion-item:hover { background: var(--bg2); }
+.religion-item.active { background: var(--accent-bg); color: var(--accent); }
+.rel-num { font-size: 10px; color: var(--text3); width: 22px; flex-shrink: 0; }
+.rel-name { flex: 1; }
+.cls-badge {
+  font-size: 9px; padding: 1px 5px; border-radius: 3px;
+  flex-shrink: 0; white-space: nowrap; font-weight: 500;
+}
+.cls-一神教         { background: var(--cls-一神教-bg);    color: var(--cls-一神教); }
+.cls-多神教         { background: var(--cls-多神教-bg);    color: var(--cls-多神教); }
+.cls-仏教系         { background: var(--cls-仏教系-bg);    color: var(--cls-仏教系); }
+.cls-日本の新宗教   { background: var(--cls-日本の新宗教-bg); color: var(--cls-日本の新宗教); }
+.cls-無神論的宗教   { background: var(--cls-無神論的宗教-bg); color: var(--cls-無神論的宗教); }
+.cls-その他         { background: var(--cls-その他-bg);    color: var(--cls-その他); }
+
+/* 詳細パネル */
+#detail-panel {
+  flex: 1; overflow-y: auto;
+  padding: 0;
+}
+#detail-inner { max-width: 860px; }
+
+/* 詳細ヘッダー */
+.detail-header {
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex; gap: 16px; align-items: flex-start;
+}
+.png-thumb-wrap {
+  width: 80px; height: 90px; flex-shrink: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--bg2);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  position: relative;
+}
+.png-thumb-wrap img {
+  width: 100%; height: 100%; object-fit: cover;
+}
+.png-thumb-wrap .no-img {
+  font-size: 28px; color: var(--text3);
+}
+.png-thumb-wrap:hover { border-color: var(--accent); }
+
+.rel-info { flex: 1; }
+.rel-name-big { font-size: 22px; font-weight: 600; }
+.rel-sub { font-size: 12px; color: var(--text2); margin-top: 3px; line-height: 1.7; }
+
+.action-row { display: flex; gap: 6px; margin-top: 12px; flex-wrap: wrap; }
+.action-link {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 12px; padding: 5px 10px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  color: var(--text2);
+  background: var(--bg3);
+  text-decoration: none;
+  transition: background .15s, border-color .15s;
+}
+.action-link:hover { background: var(--bg2); text-decoration: none; }
+.action-link.pdf        { border-color: #F4B8A0; color: var(--cls-一神教); background: var(--cls-一神教-bg); }
+.action-link.video      { border-color: #F4A4A4; color: #CC0000; background: #FFF0F0; }
+.action-link.notebooklm { border-color: #A8D5A8; color: #2A7A2A; background: #EAF6EA; }
+
+/* 詳細データグリッド */
+.data-section { padding: 16px 24px; }
+.data-section + .data-section { border-top: 1px solid var(--border); }
+.section-title {
+  font-size: 11px; font-weight: 600; color: var(--text2);
+  text-transform: uppercase; letter-spacing: .05em;
+  margin-bottom: 10px;
+}
+.data-grid {
+  display: grid; grid-template-columns: 110px 1fr;
+  gap: 4px 12px;
+}
+.data-label { font-size: 12px; color: var(--text3); padding: 3px 0; }
+.data-value { font-size: 13px; color: var(--text); padding: 3px 0; white-space: pre-line; }
+.data-value:empty::after { content: '—'; color: var(--text3); }
+
+/* キーワードタグ */
+.keywords-wrap { display: flex; flex-wrap: wrap; gap: 6px; padding: 4px 0; }
+.kw-tag {
+  font-size: 11px; padding: 3px 10px;
+  border-radius: 20px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  color: var(--text2);
+}
+
+/* ===== 歴史ビュー ===== */
+#view-history { overflow: hidden; flex-direction: column; }
+#history-controls {
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex; gap: 8px; align-items: center; flex-shrink: 0;
+  background: var(--bg3);
+}
+#history-controls span { font-size: 13px; color: var(--text2); }
+#hist-fit-btn {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: 6px; padding: 4px 12px; font-size: 12px;
+  color: var(--text2);
+}
+#hist-fit-btn:hover { background: var(--accent-bg); color: var(--accent); }
+
+#history-scroll { flex: 1; overflow: auto; padding: 16px; }
+#history-svg-wrap { display: inline-block; min-width: 100%; }
+
+/* ===== 比較ビュー ===== */
+#view-compare { overflow: hidden; flex-direction: column; }
+#compare-controls {
+  padding: 8px 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex; gap: 8px; align-items: center; flex-shrink: 0;
+  background: var(--bg3); flex-wrap: wrap;
+}
+.comp-filter {
+  font-size: 11px; padding: 3px 10px; border-radius: 20px;
+  border: 1px solid var(--border); background: var(--bg3);
+  cursor: pointer; color: var(--text2);
+  transition: background .1s;
+}
+.comp-filter.active { background: var(--accent-bg); border-color: var(--accent); color: var(--accent); }
+.comp-filter:hover:not(.active) { background: var(--bg2); }
+
+#compare-table-wrap { flex: 1; overflow: auto; }
+#compare-table {
+  width: 100%; border-collapse: collapse;
+  font-size: 12px;
+}
+#compare-table th {
+  position: sticky; top: 0; z-index: 1;
+  background: var(--bg2); border-bottom: 2px solid var(--border);
+  padding: 8px 12px; text-align: left;
+  font-size: 11px; font-weight: 600; color: var(--text2);
+  cursor: pointer; user-select: none; white-space: nowrap;
+}
+#compare-table th:hover { color: var(--accent); }
+#compare-table th.sort-asc::after  { content: ' ▲'; color: var(--accent); }
+#compare-table th.sort-desc::after { content: ' ▼'; color: var(--accent); }
+#compare-table td {
+  padding: 7px 12px; border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+#compare-table tr:hover td { background: var(--bg2); }
+.ct-name { font-weight: 500; cursor: pointer; }
+.ct-name:hover { color: var(--accent); text-decoration: underline; }
+.ct-cls-cell { white-space: nowrap; }
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- ヘッダー -->
+<div id="header">
+  <div id="logo">🕌 <span>宗教</span>総合ライブラリ</div>
+  <div class="tab-bar">
+    <button class="tab-btn active" onclick="switchView('religion')">🗂 宗教</button>
+    <button class="tab-btn" onclick="switchView('history')">📜 歴史</button>
+    <button class="tab-btn" onclick="switchView('compare')">⚖️ 比較</button>
+  </div>
+  <div id="search-box">
+    <span class="icon-search">🔍</span>
+    <input type="text" id="search-input" placeholder="宗教名・キーワードで検索..." oninput="onSearch(this.value)">
+    <button id="search-clear" onclick="clearSearch()">✕</button>
+  </div>
+</div>
+
+<!-- ステータスバー -->
+<div id="stats-bar">
+  <div class="stat-chip" id="stat-count"></div>
+  <div class="stat-chip" id="stat-png"></div>
+  <div class="stat-chip" id="stat-pdf"></div>
+  <div class="stat-chip" id="stat-nblm"></div>
+</div>
+
+<!-- 宗教ビュー -->
+<div class="view active" id="view-religion">
+  <div id="sidebar">
+    <div id="sidebar-header">
+      <span id="sidebar-label">宗教一覧</span>
+      <button id="sidebar-sort" onclick="toggleSort()">並替</button>
+    </div>
+    <div id="religion-list"></div>
+  </div>
+  <div id="detail-panel">
+    <div id="detail-inner"></div>
+  </div>
+</div>
+
+<!-- 歴史ビュー -->
+<div class="view" id="view-history">
+  <div id="history-controls">
+    <span>開宗年タイムライン</span>
+    <button id="hist-fit-btn" onclick="toggleHistoryFit()">⊡ 全体表示</button>
+  </div>
+  <div id="history-scroll">
+    <div id="history-svg-wrap"></div>
+  </div>
+</div>
+
+<!-- 比較ビュー -->
+<div class="view" id="view-compare">
+  <div id="compare-controls">
+    <span style="font-size:12px;color:var(--text2);">分類:</span>
+    <button class="comp-filter active" onclick="setCompFilter('')">全て</button>
+    <button class="comp-filter" onclick="setCompFilter('一神教')">一神教</button>
+    <button class="comp-filter" onclick="setCompFilter('多神教')">多神教</button>
+    <button class="comp-filter" onclick="setCompFilter('仏教系')">仏教系</button>
+    <button class="comp-filter" onclick="setCompFilter('日本の新宗教')">日本の新宗教</button>
+    <button class="comp-filter" onclick="setCompFilter('その他')">その他</button>
+  </div>
+  <div id="compare-table-wrap">
+    <table id="compare-table">
+      <thead id="compare-head"></thead>
+      <tbody id="compare-body"></tbody>
+    </table>
+  </div>
+</div>
+
+</div><!-- #app -->
+
+<script src="religion_data.js"></script>
+<script>
+// ============================================================
+//  グローバル状態
+// ============================================================
+let DATA = null;
+let currentIdx = 0;
+let sortMode = 'classification'; // 'classification' | 'name'
+let searchQuery = '';
+let compFilter = '';
+let compSortCol = null;
+let compSortAsc = true;
+
+// ============================================================
+//  初期化
+// ============================================================
+function init() {
+  if (typeof RELIGION_DATA === 'undefined') {
+    document.getElementById('detail-inner').innerHTML =
+      '<p style="padding:24px;color:red;">religion_data.js の読み込みに失敗しました。<br>convert_to_json.py を実行してからリロードしてください。</p>';
+    return;
+  }
+  DATA = RELIGION_DATA;
+  updateStats();
+  renderSidebar();
+  renderDetail();
+}
+
+// ============================================================
+//  ステータスバー
+// ============================================================
+function updateStats() {
+  const rs = DATA.religions;
+  document.getElementById('stat-count').innerHTML = `宗教 <strong>${rs.length}</strong> 件`;
+  document.getElementById('stat-png').innerHTML  = `インフォグラフィック <strong>${rs.filter(r=>r.png_url).length}</strong> 件`;
+  document.getElementById('stat-pdf').innerHTML  = `PDF <strong>${rs.filter(r=>r.pdf_url).length}</strong> 件`;
+  document.getElementById('stat-nblm').innerHTML = `NotebookLM <strong>${rs.filter(r=>r.notebooklm_url).length}</strong> 件`;
+}
+
+// ============================================================
+//  ビュー切り替え
+// ============================================================
+function switchView(name) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('view-' + name).classList.add('active');
+  const tabs = document.querySelectorAll('.tab-btn');
+  const idx = ['religion','history','compare'].indexOf(name);
+  if (idx >= 0) tabs[idx].classList.add('active');
+
+  if (name === 'history') renderHistory();
+  if (name === 'compare') renderCompare();
+}
+
+// ============================================================
+//  検索
+// ============================================================
+function onSearch(q) {
+  searchQuery = q.trim();
+  document.getElementById('search-clear').style.display = q ? 'block' : 'none';
+  renderSidebar();
+  if (name === 'compare') renderCompare();
+}
+function clearSearch() {
+  document.getElementById('search-input').value = '';
+  onSearch('');
+}
+function hl(text) {
+  if (!searchQuery) return text;
+  const re = new RegExp(searchQuery.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
+  return text.replace(re, m => `<mark style="background:#FFEAA0">${m}</mark>`);
+}
+
+// ============================================================
+//  分類カラー
+// ============================================================
+const CLS_COLORS = {
+  '一神教':       '#D85A30',
+  '多神教':       '#1D9E75',
+  '仏教系':       '#378ADD',
+  '日本の新宗教': '#7F77DD',
+  '無神論的宗教': '#B07A3C',
+  'その他':       '#888780',
+};
+function clsColor(cls) { return CLS_COLORS[cls] || CLS_COLORS['その他']; }
+function clsBgColor(cls) {
+  const map = {
+    '一神教':'#FAECE7','多神教':'#E1F5EE','仏教系':'#E6F1FB',
+    '日本の新宗教':'#EEEDFE','無神論的宗教':'#F5EDDE','その他':'#F1EFE8',
+  };
+  return map[cls] || '#F1EFE8';
+}
+function clsClass(cls) {
+  return 'cls-' + (cls || 'その他');
+}
+
+// ============================================================
+//  サイドバー
+// ============================================================
+function sortedReligions() {
+  const all = DATA.religions.slice();
+  const q = searchQuery.toLowerCase();
+  let list = q
+    ? all.filter(r =>
+        r.name.includes(q) ||
+        (r.philosophy || '').toLowerCase().includes(q) ||
+        (r.founder || '').toLowerCase().includes(q) ||
+        (r.keywords || []).some(k => k.toLowerCase().includes(q))
+      )
+    : all;
+
+  if (sortMode === 'classification') {
+    const order = ['一神教','多神教','仏教系','日本の新宗教','無神論的宗教','その他'];
+    list.sort((a,b) => {
+      const ai = order.indexOf(a.classification);
+      const bi = order.indexOf(b.classification);
+      if (ai !== bi) return ai - bi;
+      return a.id - b.id;
+    });
+  } else {
+    list.sort((a,b) => a.name.localeCompare(b.name, 'ja'));
+  }
+  return list;
+}
+
+function renderSidebar() {
+  if (!DATA) return;
+  const list = sortedReligions();
+  const current = DATA.religions[currentIdx];
+  let html = '';
+  list.forEach((r, vi) => {
+    const active = (r.id === (current ? current.id : -1)) ? ' active' : '';
+    const realIdx = DATA.religions.indexOf(r);
+    html += `<div class="religion-item${active}" onclick="selectReligion(${realIdx})">
+      <span class="rel-num">${r.id}</span>
+      <span class="rel-name">${hl(r.name)}</span>
+      <span class="cls-badge ${clsClass(r.classification)}">${r.classification || ''}</span>
+    </div>`;
+  });
+  document.getElementById('religion-list').innerHTML = html;
+  document.getElementById('sidebar-label').textContent = `${list.length} 件`;
+}
+
+function selectReligion(idx) {
+  currentIdx = idx;
+  renderSidebar();
+  renderDetail();
+  switchView('religion');
+}
+
+function toggleSort() {
+  sortMode = sortMode === 'classification' ? 'name' : 'classification';
+  document.getElementById('sidebar-sort').textContent =
+    sortMode === 'classification' ? '分類順' : '名前順';
+  renderSidebar();
+}
+
+// ============================================================
+//  詳細パネル
+// ============================================================
+function renderDetail() {
+  if (!DATA) return;
+  const r = DATA.religions[currentIdx];
+  if (!r) return;
+
+  const panel = document.getElementById('detail-inner');
+  const color = clsColor(r.classification);
+
+  // インフォグラフィックサムネイル
+  const thumbHtml = r.png_url
+    ? `<a href="${r.png_url}" target="_blank" title="インフォグラフィックを全画面で開く" class="png-thumb-wrap">
+         <img src="${r.png_url}" alt="${r.name}" onerror="this.parentElement.innerHTML='<span class=\\'no-img\\'>🕌</span>'">
+       </a>`
+    : `<div class="png-thumb-wrap" style="cursor:default"><span class="no-img">🕌</span></div>`;
+
+  // ボタン（PNG重複なし・PPTX削除・動画PL & NotebookLM追加）
+  const pdfBtn    = r.pdf_url        ? `<a href="${r.pdf_url}"        target="_blank" class="action-link pdf">📄 PDF資料</a>` : '';
+  const videoBtn  = r.video_url      ? `<a href="${r.video_url}"      target="_blank" class="action-link video">▶ 動画</a>` : '';
+  const nblmBtn   = r.notebooklm_url ? `<a href="${r.notebooklm_url}" target="_blank" class="action-link notebooklm">🤖 NotebookLM</a>` : '';
+
+  // キーワードタグ
+  const kwHtml = (r.keywords || []).length > 0
+    ? `<div class="keywords-wrap">${r.keywords.map(k => `<span class="kw-tag">${hl(k)}</span>`).join('')}</div>`
+    : '<span style="color:var(--text3);font-size:12px;">—</span>';
+
+  panel.innerHTML = `
+    <div class="detail-header">
+      ${thumbHtml}
+      <div class="rel-info">
+        <div class="rel-name-big">${hl(r.name)}</div>
+        <div class="rel-sub">
+          <span class="cls-badge ${clsClass(r.classification)}" style="font-size:11px;">${r.classification || ''}</span>
+          &nbsp; ${r.origin || ''} &nbsp; ${r.place || ''}
+        </div>
+        <div class="action-row">
+          ${pdfBtn}${videoBtn}${nblmBtn}
+        </div>
+      </div>
+    </div>
+
+    <div class="data-section">
+      <div class="section-title">基本情報</div>
+      <div class="data-grid">
+        <span class="data-label">思想・理念</span><span class="data-value">${hl(r.philosophy || '')}</span>
+        <span class="data-label">創始者</span><span class="data-value">${hl(r.founder || '')}</span>
+        <span class="data-label">起源</span><span class="data-value">${r.origin || ''}</span>
+        <span class="data-label">現状</span><span class="data-value">${r.extinction || ''}</span>
+        <span class="data-label">信者数</span><span class="data-value">${r.believers || ''}</span>
+        <span class="data-label">主な地域</span><span class="data-value">${r.place || ''}</span>
+      </div>
+    </div>
+
+    <div class="data-section">
+      <div class="section-title">教義・実践</div>
+      <div class="data-grid">
+        <span class="data-label">聖典</span><span class="data-value">${r.scripture || ''}</span>
+        <span class="data-label">聖地</span><span class="data-value">${r.holy_place || ''}</span>
+        <span class="data-label">崇拝対象</span><span class="data-value">${r.worship_object || ''}</span>
+        <span class="data-label">主な行事</span><span class="data-value">${r.events || ''}</span>
+        <span class="data-label">礼拝施設</span><span class="data-value">${r.facilities || ''}</span>
+      </div>
+    </div>
+
+    <div class="data-section">
+      <div class="section-title">生活規範</div>
+      <div class="data-grid">
+        <span class="data-label">衣装・服装</span><span class="data-value">${r.costume || ''}</span>
+        <span class="data-label">食事規律</span><span class="data-value">${r.food || ''}</span>
+      </div>
+    </div>
+
+    <div class="data-section">
+      <div class="section-title">キーワード</div>
+      ${kwHtml}
+    </div>
+  `;
+}
+
+// ============================================================
+//  歴史ビュー（タイムライン）
+// ============================================================
+const HIST_MIN_YEAR = -600;
+const HIST_MAX_YEAR = 2030;
+
+function parseFoundedYear(r) {
+  if (r.founded_year != null) return r.founded_year;
+  return null;
+}
+
+function toggleHistoryFit() {
+  const scroll = document.getElementById('history-scroll');
+  const wrap = document.getElementById('history-svg-wrap');
+  const btn = document.getElementById('hist-fit-btn');
+  const isFit = wrap.dataset.fit === '1';
+  if (isFit) {
+    wrap.style.transform = '';
+    wrap.style.transformOrigin = '';
+    scroll.style.overflow = 'auto';
+    wrap.dataset.fit = '0';
+    btn.textContent = '⊡ 全体表示';
+  } else {
+    const svgEl = wrap.querySelector('svg');
+    if (svgEl) {
+      const svgW = parseFloat(svgEl.getAttribute('width'));
+      const availW = scroll.clientWidth - 32;
+      const scale = Math.min(1, availW / svgW);
+      wrap.style.transformOrigin = 'top left';
+      wrap.style.transform = `scale(${scale})`;
+      wrap.style.minWidth = 'unset';
+      scroll.style.overflow = 'hidden';
+      wrap.dataset.fit = '1';
+      btn.textContent = '↔ スクロール表示';
+    }
+  }
+}
+
+function renderHistory() {
+  const wrap = document.getElementById('history-svg-wrap');
+  if (wrap.dataset.rendered) return;
+  wrap.dataset.rendered = '1';
+
+  const minYear = HIST_MIN_YEAR;
+  const maxYear = HIST_MAX_YEAR;
+  const yearRange = maxYear - minYear;
+  const PX_PER_YEAR = 0.5;
+  const ROW_H  = 28;
+  const LABEL_W = 120;
+  const HEADER_H = 45;
+
+  const svgW = LABEL_W + yearRange * PX_PER_YEAR + 30;
+
+  // 各宗教の開宗年で行割り当て（重複回避）
+  const rows = [];
+  const religions = DATA.religions.slice().sort((a,b) => {
+    const ya = parseFoundedYear(a) ?? 9999;
+    const yb = parseFoundedYear(b) ?? 9999;
+    return ya - yb;
+  });
+
+  religions.forEach(r => {
+    const start = parseFoundedYear(r);
+    if (start == null) { rows.push({r, start: null, row: 0}); return; }
+    let rowIdx = 0;
+    while (true) {
+      const end = start + 200;
+      const conflict = rows.filter(item => item.row === rowIdx && item.start != null)
+        .some(item => !(end < item.start - 100 || start > item.start + 200));
+      if (!conflict) break;
+      rowIdx++;
+    }
+    rows.push({r, start, row: rowIdx});
+  });
+
+  const maxRow = Math.max(0, ...rows.map(item => item.row));
+  const svgH   = HEADER_H + (maxRow + 1) * ROW_H + 30;
+
+  // 目盛線
+  let gridHtml = '';
+  const gridStep = yearRange > 2000 ? 200 : 100;
+  for (let y = Math.ceil(minYear / gridStep) * gridStep; y <= maxYear; y += gridStep) {
+    const x = LABEL_W + (y - minYear) * PX_PER_YEAR;
+    const isBig = y % (gridStep * 5) === 0 || y === 0;
+    const label = y < 0 ? `B.C.${Math.abs(y)}` : (y === 0 ? '紀元' : `${y}`);
+    gridHtml += `<line x1="${x.toFixed(1)}" y1="${HEADER_H - 10}" x2="${x.toFixed(1)}" y2="${svgH - 10}"
+      stroke="${isBig ? '#C8C4C0' : '#E8E5E2'}" stroke-width="${isBig ? 1 : 0.5}"/>
+      <text x="${x.toFixed(1)}" y="${HEADER_H - 14}" text-anchor="middle" font-size="10" fill="#9B9793">${label}</text>`;
+  }
+
+  // バー描画
+  let barsHtml = '';
+  rows.forEach(({r, start, row}) => {
+    if (start == null) return;
+    const x = LABEL_W + (start - minYear) * PX_PER_YEAR;
+    const w = Math.max(4, 80 * PX_PER_YEAR);
+    const y_pos = HEADER_H + row * ROW_H + 4;
+    const barH = ROW_H - 8;
+    const color = clsColor(r.classification);
+
+    barsHtml += `
+      <g class="timeline-bar" onclick="selectReligionByName('${r.name}')" style="cursor:pointer" title="${r.name}（${r.origin || ''}）">
+        <rect x="${x.toFixed(1)}" y="${y_pos}" width="${w.toFixed(1)}" height="${barH}"
+          rx="3" fill="${color}" opacity="0.85"/>
+        <rect x="${x.toFixed(1)}" y="${y_pos}" width="3" height="${barH}"
+          rx="1" fill="${color}"/>
+        <text x="${(x + w + 4).toFixed(1)}" y="${(y_pos + barH / 2 + 4).toFixed(1)}"
+          font-size="11" fill="${color}" font-weight="500">${r.name}</text>
+      </g>`;
+  });
+
+  // 分類帯（上部）
+  const clsList = ['一神教','多神教','仏教系','日本の新宗教','その他'];
+  let bandHtml = `<g>`;
+  // 現在値（西暦0を中心に表示ライン）
+  const zeroX = LABEL_W + (0 - minYear) * PX_PER_YEAR;
+  bandHtml += `<line x1="${zeroX.toFixed(1)}" y1="${HEADER_H - 10}" x2="${zeroX.toFixed(1)}" y2="${svgH - 10}"
+    stroke="#534AB7" stroke-width="1.5" stroke-dasharray="4,3" opacity="0.6"/>
+    <text x="${zeroX.toFixed(1)}" y="${HEADER_H - 26}" text-anchor="middle" font-size="10" fill="#534AB7">紀元0年</text>`;
+  bandHtml += `</g>`;
+
+  // 凡例
+  let legendHtml = '';
+  clsList.forEach((cls, i) => {
+    const lx = LABEL_W + i * 130;
+    legendHtml += `<rect x="${lx}" y="4" width="12" height="12" rx="2" fill="${clsColor(cls)}"/>
+      <text x="${lx + 16}" y="14" font-size="11" fill="${clsColor(cls)}" font-weight="500">${cls}</text>`;
+  });
+
+  wrap.innerHTML = `<svg width="${svgW}" height="${svgH}" xmlns="http://www.w3.org/2000/svg"
+    style="font-family:-apple-system,BlinkMacSystemFont,Helvetica Neue,Hiragino Sans,sans-serif">
+    <rect width="${svgW}" height="${svgH}" fill="#FAFAF9"/>
+    <g>${legendHtml}</g>
+    ${gridHtml}
+    ${bandHtml}
+    ${barsHtml}
+  </svg>`;
+}
+
+function selectReligionByName(name) {
+  const idx = DATA.religions.findIndex(r => r.name === name);
+  if (idx >= 0) selectReligion(idx);
+}
+
+// ============================================================
+//  比較ビュー
+// ============================================================
+const COMP_COLS = [
+  { key: 'name',           label: '宗教名' },
+  { key: 'classification', label: '分類' },
+  { key: 'origin',         label: '起源' },
+  { key: 'place',          label: '地域' },
+  { key: 'believers',      label: '信者数' },
+  { key: 'founder',        label: '創始者' },
+  { key: 'scripture',      label: '聖典' },
+  { key: 'holy_place',     label: '聖地' },
+  { key: 'food',           label: '食事規律' },
+  { key: 'costume',        label: '衣装' },
+  { key: 'events',         label: '主な行事' },
+  { key: 'facilities',     label: '礼拝施設' },
+];
+
+function setCompFilter(cls) {
+  compFilter = cls;
+  document.querySelectorAll('.comp-filter').forEach(b => {
+    b.classList.toggle('active', b.textContent === (cls || '全て'));
+  });
+  renderCompare();
+}
+
+function sortCompare(key) {
+  if (compSortCol === key) {
+    compSortAsc = !compSortAsc;
+  } else {
+    compSortCol = key;
+    compSortAsc = true;
+  }
+  renderCompare();
+}
+
+function renderCompare() {
+  if (!DATA) return;
+  let list = DATA.religions.slice();
+  if (compFilter) list = list.filter(r => r.classification === compFilter);
+  const q = searchQuery.toLowerCase();
+  if (q) list = list.filter(r => r.name.includes(q) || (r.keywords||[]).some(k=>k.toLowerCase().includes(q)));
+
+  if (compSortCol) {
+    list.sort((a, b) => {
+      const av = String(a[compSortCol] || '');
+      const bv = String(b[compSortCol] || '');
+      const n = compSortAsc ? 1 : -1;
+      if (!isNaN(parseFloat(av)) && !isNaN(parseFloat(bv))) {
+        return (parseFloat(av) - parseFloat(bv)) * n;
+      }
+      return av.localeCompare(bv, 'ja') * n;
+    });
+  }
+
+  // ヘッダー
+  const headHtml = COMP_COLS.map(c => {
+    const cls = compSortCol === c.key ? (compSortAsc ? ' sort-asc' : ' sort-desc') : '';
+    return `<th class="${cls}" onclick="sortCompare('${c.key}')">${c.label}</th>`;
+  }).join('');
+  document.getElementById('compare-head').innerHTML = `<tr>${headHtml}</tr>`;
+
+  // ボディ
+  let bodyHtml = '';
+  list.forEach(r => {
+    const idx = DATA.religions.indexOf(r);
+    const cells = COMP_COLS.map((c, ci) => {
+      let v = r[c.key] || '';
+      if (ci === 0) return `<td><span class="ct-name" onclick="selectReligion(${idx})">${hl(r.name)}</span></td>`;
+      if (c.key === 'classification') {
+        return `<td class="ct-cls-cell"><span class="cls-badge ${clsClass(v)}">${v}</span></td>`;
+      }
+      return `<td style="color:var(--text2)">${hl(String(v))}</td>`;
+    }).join('');
+    bodyHtml += `<tr>${cells}</tr>`;
+  });
+  document.getElementById('compare-body').innerHTML = bodyHtml;
+}
+
+// ============================================================
+//  起動
+// ============================================================
+init();
+</script>
+</body>
+</html>
