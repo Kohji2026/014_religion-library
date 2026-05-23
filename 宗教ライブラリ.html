@@ -188,6 +188,12 @@ button { font-family: inherit; cursor: pointer; }
   font-size: 36px;
   line-height: 1;
   user-select: none;
+  overflow: hidden;
+}
+.symbol-logo img {
+  width: 100%; height: 100%;
+  object-fit: contain;
+  padding: 8px;
 }
 
 .rel-info { flex: 1; }
@@ -572,9 +578,11 @@ function renderDetail() {
   const panel = document.getElementById('detail-inner');
   const color = clsColor(r.classification);
 
-  // シンボルロゴ（リンクなし・Excelで使用しているもの）
-  const sym = RELIGION_SYMBOLS[r.name] || '🕌';
-  const thumbHtml = `<div class="symbol-logo" style="color:${color};background:${clsBgColor(r.classification)};border-color:${color}40;">${sym}</div>`;
+  // シンボルロゴ（リンクなし）: logos/{宗教名}.png → なければUnicodeシンボルにフォールバック
+  const sym      = RELIGION_SYMBOLS[r.name] || '🕌';
+  const logoPath = `logos/${encodeURIComponent(r.name)}.png`;
+  const logoStyle = `color:${color};background:${clsBgColor(r.classification)};border-color:${color}40;`;
+  const thumbHtml = `<div class="symbol-logo" style="${logoStyle}"><img src="${logoPath}" alt="${r.name}" onerror="this.style.display='none';this.parentElement.textContent='${sym}'"></div>`;
 
   // ボタン（インフォグラフィック追加・PDF・動画PL・NotebookLM）
   const infographicBtn = r.png_url        ? `<a href="${r.png_url}"        target="_blank" class="action-link infographic">🖼 インフォグラフィック</a>` : '';
