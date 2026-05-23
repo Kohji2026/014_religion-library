@@ -8,3 +8,6 @@ credentials.json
 *.pfx
 secret.json
 secrets/
+
+# 作業用一時フォルダ（Excel展開結果）
+excel_extract/
