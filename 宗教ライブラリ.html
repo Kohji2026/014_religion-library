@@ -180,23 +180,15 @@ button { font-family: inherit; cursor: pointer; }
   border-bottom: 1px solid var(--border);
   display: flex; gap: 16px; align-items: flex-start;
 }
-.png-thumb-wrap {
+.symbol-logo {
   width: 80px; height: 90px; flex-shrink: 0;
-  border: 1px solid var(--border);
+  border: 2px solid;
   border-radius: var(--radius);
-  overflow: hidden;
-  background: var(--bg2);
   display: flex; align-items: center; justify-content: center;
-  cursor: pointer;
-  position: relative;
+  font-size: 36px;
+  line-height: 1;
+  user-select: none;
 }
-.png-thumb-wrap img {
-  width: 100%; height: 100%; object-fit: cover;
-}
-.png-thumb-wrap .no-img {
-  font-size: 28px; color: var(--text3);
-}
-.png-thumb-wrap:hover { border-color: var(--accent); }
 
 .rel-info { flex: 1; }
 .rel-name-big { font-size: 22px; font-weight: 600; }
@@ -216,7 +208,8 @@ button { font-family: inherit; cursor: pointer; }
 .action-link:hover { background: var(--bg2); text-decoration: none; }
 .action-link.pdf        { border-color: #F4B8A0; color: var(--cls-一神教); background: var(--cls-一神教-bg); }
 .action-link.video      { border-color: #F4A4A4; color: #CC0000; background: #FFF0F0; }
-.action-link.notebooklm { border-color: #A8D5A8; color: #2A7A2A; background: #EAF6EA; }
+.action-link.notebooklm   { border-color: #A8D5A8; color: #2A7A2A; background: #EAF6EA; }
+.action-link.infographic  { border-color: #C8A8E0; color: #6B3FA0; background: #F0E8FA; }
 
 /* 詳細データグリッド */
 .data-section { padding: 16px 24px; }
@@ -451,6 +444,40 @@ function hl(text) {
 }
 
 // ============================================================
+//  宗教シンボルロゴ（Excelで使用しているもの）
+// ============================================================
+const RELIGION_SYMBOLS = {
+  'ユダヤ教':         '✡',   // Star of David
+  'キリスト教':       '✝',   // Latin Cross
+  'イスラム教':       '☪',   // Star and Crescent
+  '仏教':             '☸',   // Wheel of Dharma
+  'ヒンドゥー教':     '🕉',  // Om
+  '儒教':             '仁',   // Ren（仁 / 仁義）
+  '道教':             '☯',   // Yin-Yang
+  'ゾロアスター教':   '🔥',  // Sacred Fire
+  'ジャイナ教':       '🤲',  // Ahimsa Hand
+  'シク教':           '☬',   // Khanda
+  '神道':             '⛩',  // Shinto Shrine
+  'バラモン教':       '🕉',  // Om（ヒンドゥー系）
+  '禅':               '○',   // Enso Circle
+  'モルモン教':       '✝',   // Cross
+  'マニ教':           '☀',   // Sacred Light
+  'エホバの証人':     '📖',  // Bible/Watchtower
+  '黒住教':           '☀',  // Sun（太陽信仰）
+  '天理教':           '◎',  // Tenri Symbol
+  '金光教':           '✨',  // Light
+  '国柱会':           '📿',  // Prayer Beads
+  '霊友会':           '☸',   // Lotus/Buddhism
+  '創価学会':         '☸',   // Lotus/Buddhism
+  'オウム真理教':     '☸',   // Buddhist Origin
+  '幸福の科学':       '✨',  // Light of Happiness
+  'PL教団':           '✝',   // Perfect Liberty
+  'サイエントロジー': '✦',   // 8-pointed Star
+  '統一教会':         '✝',   // Cross
+  '立正佼成会':       '☸',   // Buddhist
+};
+
+// ============================================================
 //  分類カラー
 // ============================================================
 const CLS_COLORS = {
@@ -545,17 +572,15 @@ function renderDetail() {
   const panel = document.getElementById('detail-inner');
   const color = clsColor(r.classification);
 
-  // インフォグラフィックサムネイル
-  const thumbHtml = r.png_url
-    ? `<a href="${r.png_url}" target="_blank" title="インフォグラフィックを全画面で開く" class="png-thumb-wrap">
-         <img src="${r.png_url}" alt="${r.name}" onerror="this.parentElement.innerHTML='<span class=\\'no-img\\'>🕌</span>'">
-       </a>`
-    : `<div class="png-thumb-wrap" style="cursor:default"><span class="no-img">🕌</span></div>`;
+  // シンボルロゴ（リンクなし・Excelで使用しているもの）
+  const sym = RELIGION_SYMBOLS[r.name] || '🕌';
+  const thumbHtml = `<div class="symbol-logo" style="color:${color};background:${clsBgColor(r.classification)};border-color:${color}40;">${sym}</div>`;
 
-  // ボタン（PNG重複なし・PPTX削除・動画PL & NotebookLM追加）
-  const pdfBtn    = r.pdf_url        ? `<a href="${r.pdf_url}"        target="_blank" class="action-link pdf">📄 PDF資料</a>` : '';
-  const videoBtn  = r.video_url      ? `<a href="${r.video_url}"      target="_blank" class="action-link video">▶ 動画</a>` : '';
-  const nblmBtn   = r.notebooklm_url ? `<a href="${r.notebooklm_url}" target="_blank" class="action-link notebooklm">🤖 NotebookLM</a>` : '';
+  // ボタン（インフォグラフィック追加・PDF・動画PL・NotebookLM）
+  const infographicBtn = r.png_url        ? `<a href="${r.png_url}"        target="_blank" class="action-link infographic">🖼 インフォグラフィック</a>` : '';
+  const pdfBtn         = r.pdf_url        ? `<a href="${r.pdf_url}"        target="_blank" class="action-link pdf">📄 PDF資料</a>` : '';
+  const videoBtn       = r.video_url      ? `<a href="${r.video_url}"      target="_blank" class="action-link video">▶ 動画</a>` : '';
+  const nblmBtn        = r.notebooklm_url ? `<a href="${r.notebooklm_url}" target="_blank" class="action-link notebooklm">🤖 NotebookLM</a>` : '';
 
   // キーワードタグ
   const kwHtml = (r.keywords || []).length > 0
@@ -572,7 +597,7 @@ function renderDetail() {
           &nbsp; ${r.origin || ''} &nbsp; ${r.place || ''}
         </div>
         <div class="action-row">
-          ${pdfBtn}${videoBtn}${nblmBtn}
+          ${infographicBtn}${pdfBtn}${videoBtn}${nblmBtn}
         </div>
       </div>
     </div>
