@@ -74,8 +74,8 @@ def estimate_year(origin_str):
     m = re.search(r'(\d+)世紀', s)
     if m:
         return int(m.group(1)) * 100 - 50
-    # 年号（4桁）
-    m = re.search(r'\b(1[0-9]{3}|20[0-9]{2})\b', s)
+    # 年号（4桁） ※ \b は日本語文字に非対応のため数字前後に非数字を要求
+    m = re.search(r'(?<!\d)(1[0-9]{3}|20[0-9]{2})(?!\d)', s)
     if m:
         return int(m.group(1))
     return None
