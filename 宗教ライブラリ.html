@@ -169,50 +169,24 @@ button { font-family: inherit; cursor: pointer; }
 .cls-無神論的宗教   { background: var(--cls-無神論的宗教-bg); color: var(--cls-無神論的宗教); }
 .cls-その他         { background: var(--cls-その他-bg);    color: var(--cls-その他); }
 
-/* ===== プレビューモーダル ===== */
-#preview-modal {
-  position: fixed; inset: 0; z-index: 1000;
-  background: rgba(0,0,0,0.6);
-  display: flex; align-items: center; justify-content: center;
-}
-#preview-box {
+/* インフォグラフィックホバープレビュー */
+.infographic-wrap { position: relative; display: inline-block; }
+.img-hover-preview {
+  display: none;
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 0;
+  z-index: 200;
   background: #fff;
-  border-radius: 12px;
-  width: 82vw; height: 88vh;
-  display: flex; flex-direction: column;
-  overflow: hidden;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.35);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+  padding: 6px;
+  width: 340px;
+  pointer-events: none;
 }
-#preview-header {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 10px 16px;
-  border-bottom: 1px solid var(--border);
-  flex-shrink: 0;
-  background: var(--bg2);
-}
-#preview-title { font-size: 14px; font-weight: 600; color: var(--text); }
-#preview-close {
-  background: none; border: 1px solid var(--border);
-  border-radius: 6px; padding: 4px 10px;
-  font-size: 12px; cursor: pointer; color: var(--text2);
-}
-#preview-close:hover { background: var(--bg3); }
-#preview-body {
-  flex: 1; overflow: auto;
-  display: flex; align-items: center; justify-content: center;
-  background: #eee;
-}
-#preview-body img { max-width: 100%; max-height: 100%; object-fit: contain; }
-#preview-body iframe { width: 100%; height: 100%; border: none; }
-.preview-btn {
-  background: none; border: 1px solid var(--border);
-  border-radius: 50%; width: 26px; height: 26px;
-  font-size: 13px; color: var(--text3);
-  display: inline-flex; align-items: center; justify-content: center;
-  cursor: pointer; flex-shrink: 0; vertical-align: middle;
-  transition: background .15s, color .15s;
-}
-.preview-btn:hover { background: var(--bg2); color: var(--text); }
+.img-hover-preview img { width: 100%; height: auto; display: block; border-radius: 4px; }
+.infographic-wrap:hover .img-hover-preview { display: block; }
 
 /* 詳細パネル */
 #detail-panel {
@@ -382,7 +356,7 @@ button { font-family: inherit; cursor: pointer; }
   <div id="sidebar">
     <div id="sidebar-header">
       <span id="sidebar-label">宗教一覧</span>
-      <button id="sidebar-sort" onclick="toggleSort()">並替</button>
+      <button id="sidebar-sort" onclick="toggleSort()">番号順</button>
     </div>
     <div id="religion-list"></div>
   </div>
@@ -423,16 +397,6 @@ button { font-family: inherit; cursor: pointer; }
 
 </div><!-- #app -->
 
-<!-- プレビューモーダル -->
-<div id="preview-modal" style="display:none;" onclick="closePreviewOverlay(event)">
-  <div id="preview-box">
-    <div id="preview-header">
-      <span id="preview-title"></span>
-      <button id="preview-close" onclick="closePreview()">✕ 閉じる</button>
-    </div>
-    <div id="preview-body"></div>
-  </div>
-</div>
 
 <script src="religion_data.js"></script>
 <script>
@@ -441,7 +405,7 @@ button { font-family: inherit; cursor: pointer; }
 // ============================================================
 let DATA = null;
 let currentIdx = 0;
-let sortMode = 'classification'; // 'classification' | 'name' | 'number'
+let sortMode = 'number'; // 'classification' | 'name' | 'number'
 let searchQuery = '';
 let compFilter = '';
 let compSortCol = null;
@@ -647,10 +611,8 @@ function renderDetail() {
   const thumbHtml = `<div class="symbol-logo" style="${logoStyle}"><img src="${logoPath}" alt="${r.name}" onerror="this.style.display='none';this.parentElement.textContent='${sym}'"></div>`;
 
   // ボタン（インフォグラフィック追加・PDF・動画PL・NotebookLM）
-  const pngEsc = r.png_url ? r.png_url.replace(/'/g, "\\'") : '';
-  const pdfEsc = r.pdf_url ? r.pdf_url.replace(/'/g, "\\'") : '';
-  const infographicBtn = r.png_url ? `<a href="${r.png_url}" target="_blank" class="action-link infographic">🖼 インフォグラフィック</a><button class="preview-btn" title="プレビュー" onclick="openPreview('${pngEsc}','image','${r.name} インフォグラフィック')">👁</button>` : '';
-  const pdfBtn         = r.pdf_url ? `<a href="${r.pdf_url}" target="_blank" class="action-link pdf">📄 PDF資料</a><button class="preview-btn" title="プレビュー" onclick="openPreview('${pdfEsc}','pdf','${r.name} PDF資料')">👁</button>` : '';
+  const infographicBtn = r.png_url ? `<div class="infographic-wrap"><a href="${r.png_url}" target="_blank" class="action-link infographic">🖼 インフォグラフィック</a><div class="img-hover-preview"><img src="${r.png_url}" alt="${r.name}"></div></div>` : '';
+  const pdfBtn         = r.pdf_url ? `<a href="${r.pdf_url}" target="_blank" class="action-link pdf">📄 PDF資料</a>` : '';
   const videoBtn       = r.video_url      ? `<a href="${r.video_url}"      target="_blank" class="action-link video">▶ 動画</a>` : '';
   const nblmBtn        = r.notebooklm_url ? `<a href="${r.notebooklm_url}" target="_blank" class="action-link notebooklm">🤖 NotebookLM</a>` : '';
 
@@ -983,29 +945,6 @@ function renderCompare() {
   document.getElementById('compare-body').innerHTML = bodyHtml;
 }
 
-// ============================================================
-//  プレビューモーダル
-// ============================================================
-function openPreview(url, type, title) {
-  document.getElementById('preview-title').textContent = title;
-  const body = document.getElementById('preview-body');
-  if (type === 'image') {
-    body.innerHTML = `<img src="${url}" alt="${title}">`;
-  } else {
-    body.innerHTML = `<iframe src="${url}"></iframe>`;
-  }
-  document.getElementById('preview-modal').style.display = 'flex';
-}
-function closePreview() {
-  document.getElementById('preview-modal').style.display = 'none';
-  document.getElementById('preview-body').innerHTML = '';
-}
-function closePreviewOverlay(e) {
-  if (e.target === document.getElementById('preview-modal')) closePreview();
-}
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') closePreview();
-});
 
 // ============================================================
 //  起動
