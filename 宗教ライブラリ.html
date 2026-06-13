@@ -264,6 +264,29 @@ button { font-family: inherit; cursor: pointer; }
   color: var(--text2);
 }
 
+/* ===== 書籍ガイドセクション ===== */
+#book-guide-section {
+  padding: 16px 24px;
+  border-top: 1px solid var(--border);
+}
+#book-guide-section .section-title { margin-bottom: 10px; }
+.book-guide-cards { display: flex; flex-wrap: wrap; gap: 8px; }
+.book-guide-card {
+  display: flex; align-items: center; gap: 8px;
+  padding: 7px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg3);
+  cursor: pointer;
+  font-size: 12px;
+  transition: background .15s, border-color .15s;
+  text-decoration: none; color: inherit;
+}
+.book-guide-card:hover { background: var(--bg2); border-color: var(--accent); text-decoration: none; }
+.book-guide-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.book-guide-title { font-weight: 500; color: var(--text); }
+.book-guide-chapter { color: var(--text3); }
+
 /* ===== 歴史ビュー ===== */
 #view-history { overflow: hidden; flex-direction: column; }
 #history-controls {
@@ -335,7 +358,8 @@ button { font-family: inherit; cursor: pointer; }
     <button class="tab-btn active" onclick="switchView('religion')">🗂 宗教</button>
     <button class="tab-btn" onclick="switchView('history')">📜 歴史</button>
     <button class="tab-btn" onclick="switchView('compare')">⚖️ 比較</button>
-    <button class="tab-btn" onclick="window.open('file:///C:/Users/kohji/OneDrive/01_記録/頻度少/リベラルアーツ/リベラルアーツ.pdf')" style="margin-left:12px;border-left:1px solid var(--border,#ccc);padding-left:14px;">📖 リベラルアーツ</button>
+    <button class="tab-btn" onclick="location.href='書籍検索.html'" style="margin-left:6px;">📚 書籍</button>
+    <button class="tab-btn" onclick="window.open('file:///C:/Users/kohji/OneDrive/01_記録/頻度少/リベラルアーツ/リベラルアーツ.pdf')" style="margin-left:6px;border-left:1px solid var(--border,#ccc);padding-left:14px;">📖 リベラルアーツ</button>
   </div>
   <div id="search-box">
     <span class="icon-search">🔍</span>
@@ -400,6 +424,7 @@ button { font-family: inherit; cursor: pointer; }
 
 
 <script src="religion_data.js"></script>
+<script src="books/data/books_index.js"></script>
 <script>
 // ============================================================
 //  グローバル状態
@@ -673,6 +698,67 @@ function renderDetail() {
       ${kwHtml}
     </div>
   `;
+
+  // 書籍ガイドセクション（books_index.js 不在時は非表示）
+  renderBookGuide(r.name, panel);
+}
+
+// ============================================================
+//  書籍ガイドセクション
+// ============================================================
+const BOOK_META = {
+  godai:    { title: '図解 世界五大宗教全史',                  color: '#2E8B57' },
+  sekai:    { title: '宗教と世界',                             color: '#AD4F7E' },
+  nemure:   { title: '眠れなくなるほど面白い 図解 世界の宗教', color: '#C9762B' },
+  allcolor: { title: 'オールカラーでわかりやすい！世界の宗教', color: '#3A7CA5' },
+};
+
+function renderBookGuide(religionName, panel) {
+  if (typeof BOOKS_INDEX === 'undefined') return;
+  const entries = (BOOKS_INDEX.tagRanges || {})[religionName];
+  if (!entries || entries.length === 0) return;
+
+  const section = document.createElement('div');
+  section.className = 'data-section';
+
+  const titleEl = document.createElement('div');
+  titleEl.className = 'section-title';
+  titleEl.textContent = '📚 この宗教を4冊で読む';
+  section.appendChild(titleEl);
+
+  const cardsWrap = document.createElement('div');
+  cardsWrap.className = 'book-guide-cards';
+
+  const url = '書籍検索.html?rel=' + encodeURIComponent(religionName);
+  entries.forEach(e => {
+    const meta = BOOK_META[e.book] || { title: e.book, color: '#888' };
+
+    const card = document.createElement('a');
+    card.className = 'book-guide-card';
+    card.href = url;
+
+    const dot = document.createElement('span');
+    dot.className = 'book-guide-dot';
+    dot.style.background = meta.color;
+    card.appendChild(dot);
+
+    const titleSpan = document.createElement('span');
+    titleSpan.className = 'book-guide-title';
+    titleSpan.textContent = meta.title;
+    card.appendChild(titleSpan);
+
+    if (e.chapter) {
+      const chapSpan = document.createElement('span');
+      chapSpan.className = 'book-guide-chapter';
+      chapSpan.textContent = '— ' + e.chapter;
+      card.appendChild(chapSpan);
+    }
+
+    cardsWrap.appendChild(card);
+  });
+
+  section.appendChild(cardsWrap);
+  panel.appendChild(section);
 }
 
 // ============================================================
