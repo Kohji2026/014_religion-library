@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>📚 書籍検索 - 宗教総合ライブラリ</title>
+<style>
+:root {
+  --bg:#FAFAF9; --bg2:#F1F0EE; --bg3:#EAE8E5;
+  --card:#FFFFFF; --border:#E0DEDB; --text:#1A1918;
+  --muted:#8A8680; --accent:#534AB7; --accent-bg:#EEEDFE;
+  --hit:#FFF3C4; --radius:8px; --shadow:0 1px 3px rgba(0,0,0,.08);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'UD デジタル 教科書体 NK','Yu Gothic','Meiryo',sans-serif;
+  background:var(--bg);color:var(--text);font-size:15px;line-height:1.7;}
+
+/* ===== ヘッダー ===== */
+header{background:var(--card);border-bottom:1px solid var(--border);padding:14px 24px 0;}
+.header-top{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;}
+h1{font-size:20px;letter-spacing:.05em;}
+h1 .sub{font-size:12px;color:var(--muted);font-weight:normal;margin-left:8px;}
+.tab-bar{display:flex;gap:6px;margin-top:10px;}
+.tab-btn{padding:8px 18px;border:1px solid var(--border);border-bottom:none;
+  border-radius:8px 8px 0 0;background:var(--bg2);color:var(--muted);
+  font-size:13.5px;cursor:pointer;font-family:inherit;transition:background .12s;}
+.tab-btn.active{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:bold;}
+.tab-btn:hover:not(.active){background:var(--bg3);}
+
+/* ===== サブモード ===== */
+.submode{display:flex;gap:8px;padding:14px 24px 0;}
+.submode button{padding:6px 16px;border:1px solid var(--border);border-radius:20px;
+  background:var(--card);color:var(--muted);cursor:pointer;font-family:inherit;font-size:13px;}
+.submode button.active{background:var(--accent-bg);color:var(--accent);
+  border-color:var(--accent);font-weight:bold;}
+
+main{padding:16px 24px 60px;max-width:1180px;margin:0 auto;}
+
+/* ===== 検索バー ===== */
+.search-row{display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin-bottom:14px;}
+.search-box{position:relative;max-width:320px;width:100%;flex:0 0 auto;}
+.search-box input{width:100%;padding:8px 32px 8px 12px;border:1px solid #ccc;
+  border-radius:6px;font-size:14px;font-family:inherit;background:var(--card);}
+.search-box input:focus{outline:2px solid var(--accent-bg);border-color:var(--accent);}
+#clearBtn{position:absolute;right:6px;top:50%;transform:translateY(-50%);
+  background:none;border:none;cursor:pointer;font-size:16px;color:#888;display:none;line-height:1;}
+.hit-count{font-size:13px;color:var(--muted);}
+
+/* ===== フィルタ ===== */
+.filters{display:flex;flex-direction:column;gap:8px;margin-bottom:18px;}
+.chip-row{display:flex;gap:6px;flex-wrap:wrap;align-items:center;}
+.chip-row .lbl{font-size:12px;color:var(--muted);width:70px;flex:0 0 auto;}
+.chip{padding:3px 12px;border-radius:14px;border:1px solid var(--border);
+  background:var(--card);font-size:12.5px;cursor:pointer;color:var(--text);font-family:inherit;}
+.chip.on{background:var(--accent);color:#fff;border-color:var(--accent);}
+.chip .n{opacity:.65;font-size:11px;margin-left:3px;}
+
+/* ===== 0件メッセージ ===== */
+.no-results{padding:32px;text-align:center;color:var(--muted);font-size:14px;line-height:2.2;}
+.no-results strong{color:var(--text);}
+.no-results .reset-btn{margin-top:10px;display:inline-block;padding:6px 18px;
+  border:1px solid var(--border);border-radius:6px;background:var(--card);
+  cursor:pointer;font-family:inherit;font-size:13px;color:var(--text);}
+.no-results .reset-btn:hover{border-color:var(--accent);color:var(--accent);}
+
+/* ===== 検索結果カード ===== */
+.results{display:flex;flex-direction:column;gap:12px;}
+.result-card{display:flex;gap:14px;background:var(--card);border:1px solid var(--border);
+  border-radius:var(--radius);box-shadow:var(--shadow);padding:12px;cursor:pointer;
+  transition:border-color .15s;}
+.result-card:hover{border-color:var(--accent);}
+.thumb{width:160px;flex:0 0 auto;border-radius:5px;border:1px solid var(--border);object-fit:cover;}
+.thumb-ph{width:160px;aspect-ratio:4/3;flex:0 0 auto;border-radius:5px;border:1px solid var(--border);
+  background:linear-gradient(135deg,var(--bg2),var(--bg3));display:flex;
+  align-items:center;justify-content:center;color:var(--muted);font-size:11px;}
+.r-body{flex:1;min-width:0;}
+.r-meta{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:4px;}
+.book-badge{font-size:11.5px;padding:2px 9px;border-radius:4px;color:#fff;font-weight:bold;}
+.bk1{background:#2E8B57;} .bk2{background:#AD4F7E;}
+.bk3{background:#C9762B;} .bk4{background:#3A7CA5;}
+.page-no{font-size:12px;color:var(--muted);}
+.rel-tag{font-size:11px;padding:1px 8px;border-radius:10px;
+  background:var(--accent-bg);color:var(--accent);}
+.r-snippet{font-size:13px;color:#444;
+  display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
+mark{background:var(--hit);padding:0 1px;border-radius:2px;}
+
+/* ===== ビューア ===== */
+.viewer{position:fixed;inset:0;background:rgba(20,18,16,.82);display:none;z-index:50;
+  align-items:center;justify-content:center;flex-direction:column;}
+.viewer.open{display:flex;}
+.v-frame{background:var(--card);border-radius:10px;max-width:940px;width:92%;
+  overflow:hidden;display:flex;flex-direction:column;max-height:92vh;}
+.v-head{display:flex;align-items:center;gap:10px;padding:10px 16px;
+  border-bottom:1px solid var(--border);flex-wrap:wrap;}
+.v-head .ttl{font-weight:bold;font-size:14px;flex:1;min-width:0;}
+.v-close{background:none;border:none;font-size:20px;cursor:pointer;color:var(--muted);flex-shrink:0;}
+.v-img-wrap{overflow-y:auto;background:var(--bg2);flex:1;display:flex;
+  align-items:center;justify-content:center;min-height:300px;}
+.v-img-wrap img{max-width:100%;height:auto;display:block;}
+.v-nav{display:flex;align-items:center;gap:8px;padding:10px 16px;
+  border-top:1px solid var(--border);flex-wrap:wrap;}
+.v-nav .nav-btn{padding:6px 14px;border-radius:6px;border:1px solid var(--border);
+  background:var(--card);cursor:pointer;font-family:inherit;font-size:13px;color:var(--text);}
+.v-nav .nav-btn:hover:not(:disabled){border-color:var(--accent);color:var(--accent);}
+.v-nav .nav-btn:disabled{opacity:.4;cursor:default;}
+.v-nav .pg{font-size:13px;color:var(--muted);margin:0 4px;}
+.v-actions{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap;}
+.v-actions a{padding:6px 14px;border-radius:6px;border:1px solid var(--border);
+  background:var(--card);font-family:inherit;font-size:13px;color:var(--text);
+  text-decoration:none;display:inline-block;}
+.v-actions .pdf-btn{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:bold;}
+.v-actions .hist-btn{background:#FBF3E2;border-color:#D9B36C;color:#7A5C1E;}
+.kbd-hint{font-size:11px;color:#aaa;margin-top:8px;text-align:center;}
+
+/* ===== テーマ読み比べ ===== */
+.theme-chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px;}
+.theme-chips .chip{font-size:13px;padding:5px 16px;}
+.theme-chips .chip.on{border-width:2px;font-weight:bold;}
+.matrix-wrap{overflow-x:auto;background:var(--card);border:1px solid var(--border);
+  border-radius:var(--radius);box-shadow:var(--shadow);}
+table.matrix{border-collapse:collapse;width:100%;min-width:700px;}
+.matrix th,.matrix td{border-bottom:1px solid var(--border);
+  padding:10px 12px;text-align:left;font-size:13px;vertical-align:top;}
+.matrix thead th{background:var(--bg2);font-size:12.5px;position:sticky;top:0;}
+.matrix thead th.hl{background:var(--accent-bg);color:var(--accent);font-weight:bold;}
+.matrix td .cell{display:inline-block;padding:4px 10px;border-radius:6px;
+  background:var(--accent-bg);color:var(--accent);cursor:pointer;font-size:12.5px;
+  margin:2px 2px 2px 0;}
+.matrix td .cell:hover{background:var(--accent);color:#fff;}
+.matrix td .none{color:var(--border);font-size:12px;}
+.matrix .rel-col{font-weight:bold;white-space:nowrap;}
+.note-box{font-size:12px;color:var(--muted);margin-top:10px;padding:0 4px;}
+
+/* ===== ローディング ===== */
+#loading-msg{padding:40px;text-align:center;color:var(--muted);}
+
+section.pane{display:none;}
+section.pane.active{display:block;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <h1>🕊 宗教総合ライブラリ<span class="sub">Religion Library</span></h1>
+  </div>
+  <div class="tab-bar">
+    <button class="tab-btn" onclick="location.href='宗教ライブラリ.html'">🗂 宗教</button>
+    <button class="tab-btn" onclick="location.href='宗教ライブラリ.html'">📜 歴史</button>
+    <button class="tab-btn" onclick="location.href='宗教ライブラリ.html'">⚖️ 比較</button>
+    <button class="tab-btn active">📚 書籍</button>
+    <button class="tab-btn" onclick="window.open('file:///C:/Users/kohji/OneDrive/01_記録/頻度少/リベラルアーツ/リベラルアーツ.pdf')" style="margin-left:12px;border-left:1px solid var(--border);padding-left:16px;">📖 リベラルアーツ</button>
+  </div>
+</header>
+
+<div class="submode">
+  <button class="active" id="btn-search" onclick="setMode('search',this)">🔍 全文検索</button>
+  <button id="btn-theme" onclick="setMode('theme',this)">📖 テーマ読み比べ</button>
+</div>
+
+<main>
+  <div id="loading-msg">データ読み込み中…</div>
+
+  <!-- ========== A. 全文検索 ========== -->
+  <section class="pane" id="pane-search">
+    <div class="search-row">
+      <div class="search-box">
+        <input type="text" id="searchInput" placeholder="4冊を横断検索（例：ジハード）">
+        <button id="clearBtn" title="クリア">×</button>
+      </div>
+      <span class="hit-count" id="hitCount"></span>
+    </div>
+    <div class="filters">
+      <div class="chip-row">
+        <span class="lbl">書籍：</span>
+        <div id="bookChips"></div>
+      </div>
+      <div class="chip-row">
+        <span class="lbl">宗教タグ：</span>
+        <div id="tagChips"></div>
+      </div>
+    </div>
+    <div id="searchResults"></div>
+  </section>
+
+  <!-- ========== B. テーマ読み比べ ========== -->
+  <section class="pane" id="pane-theme">
+    <div class="theme-chips" id="themeChips"></div>
+    <div class="matrix-wrap">
+      <table class="matrix" id="themeMatrix"></table>
+    </div>
+    <div class="note-box">※ マッピングは目次から半自動生成。セルをクリックすると該当見開きが開きます。空欄「―」はその本に該当記事なし。</div>
+  </section>
+</main>
+
+<!-- ========== ビューア ========== -->
+<div class="viewer" id="viewer">
+  <div class="v-frame">
+    <div class="v-head">
+      <span id="vBadge" class="book-badge"></span>
+      <span id="vTitle" class="ttl"></span>
+      <button class="v-close" onclick="closeViewer()">✕</button>
+    </div>
+    <div class="v-img-wrap" id="vImgWrap">
+      <img id="vImg" src="" alt="">
+    </div>
+    <div class="v-nav">
+      <button class="nav-btn" id="vPrev" onclick="viewerNav(-1)">← 前の見開き</button>
+      <span class="pg" id="vPg"></span>
+      <button class="nav-btn" id="vNext" onclick="viewerNav(1)">次の見開き →</button>
+      <div class="v-actions">
+        <a id="vHist" class="hist-btn" href="#" target="_blank">🏛 歴史検索で調べる</a>
+        <a id="vPdf"  class="pdf-btn"  href="#" target="_blank">📄 原寸PDFで開く</a>
+      </div>
+    </div>
+    <div class="kbd-hint">← → キー：ページ送り　／　Esc：閉じる</div>
+  </div>
+</div>
+
+<!-- データ読み込み（<script src> 方式 / file:// 対応） -->
+<script src="books/data/books_index.js"></script>
+<script src="books/data/book_godai.js"></script>
+<script src="books/data/book_sekai.js"></script>
+<script src="books/data/book_nemure.js"></script>
+<script src="books/data/book_allcolor.js"></script>
+
+<script>
+// ============================================================
+// 書籍メタ定義
+// ============================================================
+const BOOK_DEFS = [
+  { key:'godai',    short:'五大宗教全史',      cls:'bk1', ref:()=>typeof BOOK_GODAI!=='undefined'?BOOK_GODAI:null },
+  { key:'sekai',    short:'宗教と世界',         cls:'bk2', ref:()=>typeof BOOK_SEKAI!=='undefined'?BOOK_SEKAI:null },
+  { key:'nemure',   short:'眠れなくなるほど',   cls:'bk3', ref:()=>typeof BOOK_NEMURE!=='undefined'?BOOK_NEMURE:null },
+  { key:'allcolor', short:'オールカラー',        cls:'bk4', ref:()=>typeof BOOK_ALLCOLOR!=='undefined'?BOOK_ALLCOLOR:null },
+];
+
+// ============================================================
+// データ初期化
+// ============================================================
+let ALL_PAGES = [];          // 全見開き（検索対象）
+let BOOK_PAGES = {};         // key → pages（ビューア用）
+let TOTAL_SPREADS = 0;
+let dataReady = false;
+
+function initData() {
+  // books_index.js が読めていなければ中断
+  if (typeof BOOKS_INDEX === 'undefined') {
+    document.getElementById('loading-msg').textContent =
+      '⚠ books/data/books_index.js が見つかりません。tag_map.py を先に実行してください。';
+    return;
+  }
+
+  // 書籍データを統合
+  for (const def of BOOK_DEFS) {
+    const book = def.ref();
+    if (!book) continue;
+    BOOK_PAGES[def.key] = book.pages;
+    for (const p of book.pages) {
+      const tags = computeTags(def.key, p.page, p.tags || []);
+      ALL_PAGES.push({ ...p, bookKey: def.key, bookDef: def, tags });
+      TOTAL_SPREADS++;
+    }
+  }
+
+  document.getElementById('loading-msg').style.display = 'none';
+  document.getElementById('pane-search').classList.add('active');
+  dataReady = true;
+  buildBookChips();
+  buildTagChips();
+  buildThemeChips();
+
+  // URLパラメータ処理
+  const params = new URLSearchParams(location.search);
+  const q   = params.get('q');
+  const rel = params.get('rel');
+  if (rel) {
+    setActiveRelTag(rel);
+  }
+  if (q) {
+    document.getElementById('searchInput').value = q;
+    document.getElementById('clearBtn').style.display = 'block';
+    doSearch();
+  } else {
+    renderResults([], '');
+  }
+}
+
+// ページのタグを tagRanges から動的解決
+function computeTags(bookKey, pageNo, existingTags) {
+  const tags = new Set(existingTags);
+  for (const [rel, ranges] of Object.entries(BOOKS_INDEX.tagRanges || {})) {
+    for (const r of ranges) {
+      if (r.book === bookKey && pageNo >= r.from_page && pageNo <= r.to_page) {
+        tags.add(rel);
+      }
+    }
+  }
+  return [...tags];
+}
+
+// ============================================================
+// フィルタ状態
+// ============================================================
+const activeBooks = new Set(BOOK_DEFS.map(d => d.key));
+let activeRelTag = 'all'; // 'all' or 宗教名
+
+function buildBookChips() {
+  const wrap = document.getElementById('bookChips');
+  wrap.innerHTML = '';
+  for (const def of BOOK_DEFS) {
+    if (!BOOK_PAGES[def.key]) continue;
+    const btn = document.createElement('button');
+    btn.className = 'chip on';
+    btn.dataset.key = def.key;
+    btn.textContent = def.short;
+    btn.onclick = () => toggleBook(def.key, btn);
+    wrap.appendChild(btn);
+  }
+}
+
+function toggleBook(key, btn) {
+  if (activeBooks.has(key)) {
+    activeBooks.delete(key);
+    btn.classList.remove('on');
+  } else {
+    activeBooks.add(key);
+    btn.classList.add('on');
+  }
+  doSearch();
+}
+
+function buildTagChips() {
+  const wrap = document.getElementById('tagChips');
+  wrap.innerHTML = '';
+  // 「すべて」チップ
+  const all = document.createElement('button');
+  all.className = 'chip on';
+  all.id = 'chip-all';
+  all.textContent = 'すべて';
+  all.onclick = () => { setActiveRelTag('all'); doSearch(); };
+  wrap.appendChild(all);
+  // 個別宗教チップ（tagRanges のキー順）
+  for (const rel of Object.keys(BOOKS_INDEX.tagRanges || {})) {
+    const btn = document.createElement('button');
+    btn.className = 'chip';
+    btn.dataset.rel = rel;
+    btn.innerHTML = `${escH(rel)}<span class="n" id="tc-${encodeURI(rel)}"></span>`;
+    btn.onclick = () => { setActiveRelTag(rel); doSearch(); };
+    wrap.appendChild(btn);
+  }
+}
+
+function setActiveRelTag(rel) {
+  activeRelTag = rel;
+  document.getElementById('chip-all').classList.toggle('on', rel === 'all');
+  document.querySelectorAll('#tagChips .chip[data-rel]').forEach(btn => {
+    btn.classList.toggle('on', btn.dataset.rel === rel);
+  });
+}
+
+// ============================================================
+// 検索
+// ============================================================
+function doSearch() {
+  if (!dataReady) return;
+  const raw = document.getElementById('searchInput').value;
+  const q = raw.normalize('NFKC').toLowerCase().trim();
+  renderResults(q ? search(q) : [], raw.trim());
+}
+
+function search(normQ) {
+  return ALL_PAGES.filter(p => {
+    if (!activeBooks.has(p.bookKey)) return false;
+    if (p.text.length < 10) return false;
+    if (activeRelTag !== 'all' && !p.tags.includes(activeRelTag)) return false;
+    return p.text.normalize('NFKC').toLowerCase().includes(normQ);
+  });
+}
+
+// タグ別件数を集計してチップに反映
+function updateTagCounts(results) {
+  const counts = {};
+  for (const p of results) {
+    for (const t of p.tags) counts[t] = (counts[t] || 0) + 1;
+  }
+  document.querySelectorAll('#tagChips .chip[data-rel]').forEach(btn => {
+    const n = counts[btn.dataset.rel] || 0;
+    const span = btn.querySelector('.n');
+    if (span) span.textContent = n > 0 ? n : '';
+  });
+}
+
+function renderResults(results, rawQ) {
+  const el = document.getElementById('searchResults');
+  const countEl = document.getElementById('hitCount');
+
+  if (!rawQ) {
+    el.innerHTML = '';
+    countEl.textContent = `全 ${TOTAL_SPREADS} 見開き`;
+    updateTagCounts([]);
+    return;
+  }
+
+  updateTagCounts(results);
+
+  if (results.length === 0) {
+    // タグフィルタが原因かチェック
+    let withoutTag = 0;
+    if (activeRelTag !== 'all') {
+      const normQ = rawQ.normalize('NFKC').toLowerCase();
+      withoutTag = ALL_PAGES.filter(p =>
+        activeBooks.has(p.bookKey) && p.text.length >= 10 &&
+        p.text.normalize('NFKC').toLowerCase().includes(normQ)
+      ).length;
+    }
+    countEl.textContent = '0件';
+    el.innerHTML = `<div class="no-results">
+      <strong>「${escH(rawQ)}」は4冊中に見つかりませんでした</strong><br>
+      ${withoutTag > 0 ? `<span>フィルタを外すと ${withoutTag} 件ヒットします</span><br>` : ''}
+      <button class="reset-btn" onclick="resetFilters()">〔フィルタをリセット〕</button>
+    </div>`;
+    return;
+  }
+
+  countEl.textContent = `${results.length} 件ヒット（${TOTAL_SPREADS} 見開き中）`;
+
+  const normQ = rawQ.normalize('NFKC').toLowerCase();
+  el.innerHTML = results.map(p => {
+    const snippet = makeSnippet(p.text, normQ, rawQ);
+    const tagHtml = p.tags.map(t => `<span class="rel-tag">${escH(t)}</span>`).join('');
+    return `<div class="result-card" onclick="openViewerFromPage('${p.bookKey}',${p.page - 1})">
+      <img class="thumb" src="${escH(p.thumb)}" loading="lazy" alt="" onerror="this.style.display='none'">
+      <div class="r-body">
+        <div class="r-meta">
+          <span class="book-badge ${p.bookDef.cls}">${escH(p.bookDef.short)}</span>
+          <span class="page-no">p${p.page}</span>
+          ${tagHtml}
+        </div>
+        <div class="r-snippet">${snippet}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function resetFilters() {
+  activeRelTag = 'all';
+  BOOK_DEFS.forEach(d => activeBooks.add(d.key));
+  document.querySelectorAll('#bookChips .chip').forEach(c => c.classList.add('on'));
+  setActiveRelTag('all');
+  doSearch();
+}
+
+// ============================================================
+// スニペット生成
+// ============================================================
+function makeSnippet(text, normQ, rawQ) {
+  const normText = text.normalize('NFKC').toLowerCase();
+  const pos = normText.indexOf(normQ);
+  if (pos < 0) return '';
+  const start = Math.max(0, pos - 40);
+  const end   = Math.min(text.length, pos + rawQ.length + 40);
+  const snippet = (start > 0 ? '…' : '') + text.slice(start, end) + (end < text.length ? '…' : '');
+  return highlightText(snippet, normQ, rawQ);
+}
+
+function highlightText(text, normQ, rawQ) {
+  const normText = text.normalize('NFKC').toLowerCase();
+  const parts = [];
+  let i = 0;
+  while (i < text.length) {
+    const pos = normText.indexOf(normQ, i);
+    if (pos < 0) { parts.push(escH(text.slice(i))); break; }
+    parts.push(escH(text.slice(i, pos)));
+    parts.push(`<mark>${escH(text.slice(pos, pos + rawQ.length))}</mark>`);
+    i = pos + rawQ.length;
+  }
+  return parts.join('');
+}
+
+function escH(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ============================================================
+// ビューア
+// ============================================================
+let vBookKey = '';
+let vPageIdx = 0;  // BOOK_PAGES[vBookKey] 内のインデックス
+let vSearchQ = '';
+
+function openViewerFromPage(bookKey, pageIdx) {
+  vBookKey = bookKey;
+  vPageIdx = pageIdx;
+  vSearchQ = document.getElementById('searchInput').value.trim();
+  renderViewer();
+  document.getElementById('viewer').classList.add('open');
+}
+
+function renderViewer() {
+  const pages = BOOK_PAGES[vBookKey];
+  if (!pages) return;
+  const p   = pages[vPageIdx];
+  const def = BOOK_DEFS.find(d => d.key === vBookKey);
+
+  document.getElementById('vBadge').className = `book-badge ${def.cls}`;
+  document.getElementById('vBadge').textContent = def.short;
+  document.getElementById('vTitle').textContent = `p${p.page}`;
+  document.getElementById('vImg').src = p.img;
+  document.getElementById('vPg').textContent = `${vPageIdx + 1} / ${pages.length}`;
+  document.getElementById('vPrev').disabled = (vPageIdx === 0);
+  document.getElementById('vNext').disabled = (vPageIdx === pages.length - 1);
+
+  // PDF リンク
+  const pdfUrl = (BOOK_PAGES[vBookKey] && BOOK_DEFS.find(d=>d.key===vBookKey))
+    ? (() => {
+        const book = [BOOK_GODAI,BOOK_SEKAI,BOOK_NEMURE,BOOK_ALLCOLOR]
+          .find(b => b && b.meta && b.meta.key === vBookKey);
+        return book ? `${book.meta.pdfPath}#page=${p.pdfPage + 1}` : '#';
+      })()
+    : '#';
+  document.getElementById('vPdf').href = pdfUrl;
+
+  // 歴史検索リンク
+  const histBase = (typeof BOOKS_INDEX !== 'undefined' && BOOKS_INDEX.historyToolPath) || '../009_歴史検索/index.html';
+  document.getElementById('vHist').href = vSearchQ
+    ? `${histBase}?q=${encodeURIComponent(vSearchQ)}`
+    : histBase;
+}
+
+function closeViewer() {
+  document.getElementById('viewer').classList.remove('open');
+}
+
+function viewerNav(dir) {
+  const pages = BOOK_PAGES[vBookKey];
+  if (!pages) return;
+  const next = vPageIdx + dir;
+  if (next < 0 || next >= pages.length) return;
+  vPageIdx = next;
+  renderViewer();
+}
+
+document.addEventListener('keydown', e => {
+  if (!document.getElementById('viewer').classList.contains('open')) return;
+  if (e.key === 'Escape') closeViewer();
+  if (e.key === 'ArrowLeft')  viewerNav(-1);
+  if (e.key === 'ArrowRight') viewerNav(1);
+});
+
+// ============================================================
+// テーマ読み比べ
+// ============================================================
+let activeTheme = '';
+
+function buildThemeChips() {
+  if (typeof BOOKS_INDEX === 'undefined' || !BOOKS_INDEX.themes) return;
+  const wrap = document.getElementById('themeChips');
+  const themes = Object.keys(BOOKS_INDEX.themes);
+  themes.forEach((t, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'chip' + (i === 0 ? ' on' : '');
+    btn.textContent = t;
+    btn.onclick = () => {
+      wrap.querySelectorAll('.chip').forEach(c => c.classList.remove('on'));
+      btn.classList.add('on');
+      activeTheme = t;
+      renderThemeMatrix(t);
+    };
+    wrap.appendChild(btn);
+  });
+  activeTheme = themes[0];
+  if (activeTheme) renderThemeMatrix(activeTheme);
+}
+
+function renderThemeMatrix(theme) {
+  if (typeof BOOKS_INDEX === 'undefined') return;
+  const themeData = BOOKS_INDEX.themes[theme] || {};
+  const rels = Object.keys(themeData);
+  if (!rels.length) {
+    document.getElementById('themeMatrix').innerHTML = '<tr><td>データなし</td></tr>';
+    return;
+  }
+
+  const bookOrder = ['godai','sekai','nemure','allcolor'];
+  const bookNames = { godai:'五大宗教全史', sekai:'宗教と世界', nemure:'眠れなくなるほど', allcolor:'オールカラー' };
+  const bookCls   = { godai:'bk1', sekai:'bk2', nemure:'bk3', allcolor:'bk4' };
+
+  const thead = `<thead><tr>
+    <th>テーマ「${escH(theme)}」</th>
+    ${bookOrder.map(k => `<th class="${activeTheme?'hl':''}">${escH(bookNames[k])}</th>`).join('')}
+  </tr></thead>`;
+
+  const tbody = rels.map(rel => {
+    const cells = bookOrder.map(bk => {
+      const entries = (themeData[rel] || []).filter(e => e[0] === bk);
+      if (!entries.length) return `<td><span class="none">―</span></td>`;
+      const links = entries.map(([bk2, pg, label]) =>
+        `<span class="cell" onclick="openViewerFromPage('${bk2}',${pg-1})">${escH(label)}</span>`
+      ).join('');
+      return `<td>${links}</td>`;
+    }).join('');
+    return `<tr><td class="rel-col">${escH(rel)}</td>${cells}</tr>`;
+  }).join('');
+
+  document.getElementById('themeMatrix').innerHTML = thead + `<tbody>${tbody}</tbody>`;
+}
+
+// ============================================================
+// サブモード切替
+// ============================================================
+function setMode(mode, btn) {
+  document.querySelectorAll('.submode button').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('section.pane').forEach(p => p.classList.remove('active'));
+  document.getElementById('pane-' + mode).classList.add('active');
+  if (mode === 'theme' && activeTheme) renderThemeMatrix(activeTheme);
+}
+
+// ============================================================
+// 検索入力イベント
+// ============================================================
+const searchInput = document.getElementById('searchInput');
+const clearBtn    = document.getElementById('clearBtn');
+searchInput.addEventListener('input', () => {
+  clearBtn.style.display = searchInput.value ? 'block' : 'none';
+  doSearch();
+});
+clearBtn.addEventListener('click', () => {
+  searchInput.value = '';
+  clearBtn.style.display = 'none';
+  doSearch();
+});
+
+// ============================================================
+// 起動
+// ============================================================
+document.addEventListener('DOMContentLoaded', initData);
+</script>
+</body>
+</html>
