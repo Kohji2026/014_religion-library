@@ -11,3 +11,8 @@ secrets/
 
 # 作業用一時フォルダ（Excel展開結果）
 excel_extract/
+
+# 書籍検索：著作物・大容量ファイル・APIキー（GitHubに上げない）
+books/data/
+books/img/
+books/.env
