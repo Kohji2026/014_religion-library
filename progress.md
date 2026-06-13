@@ -55,6 +55,11 @@
 - 歴史検索クロスリンク（?q=付きURL）
 - URLパラメータ受信（?q= / ?rel=）
 
+## 2026-06-13 追加作業
+- [x] 4宗教をExcelに追加（計32宗教）
+- [x] convert_to_json.py 実行 → religion_data.js 更新
+- [x] GitHub push済み
+
 ## メモ
 - Excelソース: `C:\Users\kohji\OneDrive\01_記録\22_宗教一覧.xlsx`
 - インフォグラフィック: `C:\Users\kohji\OneDrive\01_記録\頻度少\宗教\`
