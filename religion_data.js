@@ -3,7 +3,7 @@ const RELIGION_DATA = {
     "title": "宗教総合ライブラリ",
     "description": "浩二さんのパーソナル宗教ライブラリ（28宗教）",
     "version": "1.0",
-    "count": 28
+    "count": 32
   },
   "religions": [
     {
@@ -492,7 +492,7 @@ const RELIGION_DATA = {
         "輸血拒否"
       ],
       "videos": [],
-      "video_url": "",
+      "video_url": "https://www.youtube.com/playlist?list=PLDLJr4l_E2bqoKIHu0-Brt2n2piwF0sro",
       "notebooklm_url": "https://notebooklm.google.com/notebook/ebb008fa-52a8-4c74-9088-2e0c66fa4d08?addSource=true",
       "onedrive": "https://1drv.ms/f/c/2840b1886e3c6012/IgBpBj4dgBjfTL13a1nTslM4AR46Six_foLKp7E5r91GNlE?e=HspfNZ",
       "png_url": "file:///C:/Users/kohji/OneDrive/01_%E8%A8%98%E9%8C%B2/%E9%A0%BB%E5%BA%A6%E5%B0%91/%E5%AE%97%E6%95%99/%E3%82%A8%E3%83%9B%E3%83%90%E3%81%AE%E8%A8%BC%E4%BA%BA/%E3%82%A8%E3%83%9B%E3%83%90%E3%81%AE%E8%A8%BC%E4%BA%BA.png",
@@ -500,6 +500,64 @@ const RELIGION_DATA = {
     },
     {
       "id": 17,
+      "name": "バハーイ教",
+      "classification": "その他",
+      "philosophy": "全人類を家族と説く\n科学と宗教の調和",
+      "founder": "バハウラ",
+      "scripture": "キターベ・\nアクダス（結実の書）",
+      "place": "ペルシャ（現イラン）",
+      "holy_place": "ハイファ、\nアッコ（イスラエル）",
+      "origin": "1863年",
+      "founded_year": 1863,
+      "extinction": "現存",
+      "believers": "約500万〜800万人",
+      "worship_object": "唯一の神（バハ）",
+      "events": "19日祭、リズワン祭",
+      "costume": "",
+      "food": "アルコールの禁止\n19日間の断食期間",
+      "facilities": "バハーイ礼拝堂",
+      "keywords": [
+        "地球は一つの国\n人類はその市民",
+        "偏見の打破\n科学と宗教の調和"
+      ],
+      "videos": [],
+      "video_url": "https://www.youtube.com/playlist?list=PLDLJr4l_E2brlMU6tkoOqWdyB6eQgFfVW",
+      "notebooklm_url": "https://notebooklm.google.com/notebook/285c004b-c4bc-4635-862d-bba8266da473",
+      "onedrive": "https://1drv.ms/f/c/2840b1886e3c6012/IgAS_NdSpbggTIAE6hdeuHFJATsne6aWBraKDz6q6oyanxI?e=qyYaJk",
+      "png_url": "file:///C:/Users/kohji/OneDrive/01_%E8%A8%98%E9%8C%B2/%E9%A0%BB%E5%BA%A6%E5%B0%91/%E5%AE%97%E6%95%99/%E3%83%90%E3%83%8F%E3%83%BC%E3%82%A4%E6%95%99/%E3%83%90%E3%83%8F%E3%83%BC%E3%82%A4%E6%95%99.png",
+      "pdf_url": "file:///C:/Users/kohji/OneDrive/01_%E8%A8%98%E9%8C%B2/%E9%A0%BB%E5%BA%A6%E5%B0%91/%E5%AE%97%E6%95%99/%E3%83%90%E3%83%8F%E3%83%BC%E3%82%A4%E6%95%99/%E3%83%90%E3%83%8F%E3%83%BC%E3%82%A4%E6%95%99.pdf"
+    },
+    {
+      "id": 18,
+      "name": "陰陽道",
+      "classification": "その他",
+      "philosophy": "陰陽五行説から発展\n自然科学・呪術",
+      "founder": "安倍晴明ら",
+      "scripture": "陰陽五行の諸書\n暦書",
+      "place": "日本",
+      "holy_place": "",
+      "origin": "飛鳥〜奈良時代頃",
+      "founded_year": null,
+      "extinction": "明治時代に廃止\n（一部現存）",
+      "believers": "なし",
+      "worship_object": "泰山府君、天社神、\n星神",
+      "events": "祓（はらえ）\n泰山府君祭",
+      "costume": "狩衣\n浄衣",
+      "food": "",
+      "facilities": "陰陽寮",
+      "keywords": [
+        "陰陽五行、\n式神、安倍晴明",
+        "暦、占術、風水"
+      ],
+      "videos": [],
+      "video_url": "",
+      "notebooklm_url": "https://notebooklm.google.com/notebook/658a82cb-522f-41b2-b308-effa92a99ba1",
+      "onedrive": "https://1drv.ms/f/c/2840b1886e3c6012/IgAwjni7Lh-gRLnPjtzLPh7-AXu8-xYML-yhH4VJrGspQvg?e=vXKDZ6",
+      "png_url": "file:///C:/Users/kohji/OneDrive/01_%E8%A8%98%E9%8C%B2/%E9%A0%BB%E5%BA%A6%E5%B0%91/%E5%AE%97%E6%95%99/%E9%99%B0%E9%99%BD%E9%81%93/%E9%99%B0%E9%99%BD%E9%81%93.png",
+      "pdf_url": "file:///C:/Users/kohji/OneDrive/01_%E8%A8%98%E9%8C%B2/%E9%A0%BB%E5%BA%A6%E5%B0%91/%E5%AE%97%E6%95%99/%E9%99%B0%E9%99%BD%E9%81%93/%E9%99%B0%E9%99%BD%E9%81%93.pdf"
+    },
+    {
+      "id": 19,
       "name": "黒住教",
       "classification": "日本の新宗教",
       "philosophy": "生かされている感謝\n日々の生活が神の道",
@@ -528,7 +586,7 @@ const RELIGION_DATA = {
       "pdf_url": "file:///C:/Users/kohji/OneDrive/01_%E8%A8%98%E9%8C%B2/%E9%A0%BB%E5%BA%A6%E5%B0%91/%E5%AE%97%E6%95%99/%E9%BB%92%E4%BD%8F%E6%95%99/%E9%BB%92%E4%BD%8F%E6%95%99.pdf"
     },
     {
-      "id": 18,
+      "id": 20,
       "name": "天理教",
       "classification": "日本の新宗教",
       "philosophy": "体は神からのかりもの\n陽気ぐらしを目指す",
@@ -557,7 +615,7 @@ const RELIGION_DATA = {
       "pdf_url": "file:///C:/Users/kohji/OneDrive/01_%E8%A8%98%E9%8C%B2/%E9%A0%BB%E5%BA%A6%E5%B0%91/%E5%AE%97%E6%95%99/%E5%A4%A9%E7%90%86%E6%95%99/%E5%A4%A9%E7%90%86%E6%95%99.pdf"
     },
     {
-      "id": 19,
+      "id": 21,
       "name": "金光教",
       "classification": "日本の新宗教",
       "philosophy": "神と人との仲立ちで\n道理に沿って生きる",
@@ -587,7 +645,7 @@ const RELIGION_DATA = {
       "pdf_url": "file:///C:/Users/kohji/OneDrive/01_%E8%A8%98%E9%8C%B2/%E9%A0%BB%E5%BA%A6%E5%B0%91/%E5%AE%97%E6%95%99/%E9%87%91%E5%85%89%E6%95%99/%E9%87%91%E5%85%89%E6%95%99.pdf"
     },
     {
-      "id": 20,
+      "id": 22,
       "name": "国柱会",
       "classification": "日本の新宗教",
       "philosophy": "日蓮仏法で世を救い\n理想的な世界を建設",
@@ -616,7 +674,7 @@ const RELIGION_DATA = {
       "pdf_url": "file:///C:/Users/kohji/OneDrive/01_%E8%A8%98%E9%8C%B2/%E9%A0%BB%E5%BA%A6%E5%B0%91/%E5%AE%97%E6%95%99/%E5%9B%BD%E6%9F%B1%E4%BC%9A/%E5%9B%BD%E6%9F%B1%E4%BC%9A.pdf"
     },
     {
-      "id": 21,
+      "id": 23,
       "name": "霊友会",
       "classification": "日本の新宗教",
       "philosophy": "先祖を分け隔てなく\n供養し感謝を捧げる",
@@ -645,7 +703,7 @@ const RELIGION_DATA = {
       "pdf_url": "file:///C:/Users/kohji/OneDrive/01_%E8%A8%98%E9%8C%B2/%E9%A0%BB%E5%BA%A6%E5%B0%91/%E5%AE%97%E6%95%99/%E9%9C%8A%E5%8F%8B%E4%BC%9A/%E9%9C%8A%E5%8F%8B%E4%BC%9A.pdf"
     },
     {
-      "id": 22,
+      "id": 24,
       "name": "創価学会",
       "classification": "日本の新宗教",
       "philosophy": "日蓮の仏法を基調とし\n幸福と平和を追求",
@@ -675,7 +733,7 @@ const RELIGION_DATA = {
       "pdf_url": "file:///C:/Users/kohji/OneDrive/01_%E8%A8%98%E9%8C%B2/%E9%A0%BB%E5%BA%A6%E5%B0%91/%E5%AE%97%E6%95%99/%E5%89%B5%E4%BE%A1%E5%AD%A6%E4%BC%9A/%E5%89%B5%E4%BE%A1%E5%AD%A6%E4%BC%9A.pdf"
     },
     {
-      "id": 23,
+      "id": 25,
       "name": "オウム真理教",
       "classification": "日本の新宗教",
       "philosophy": "煩悩を脱して解脱し\n超能力を得る",
@@ -707,7 +765,7 @@ const RELIGION_DATA = {
       "pdf_url": "file:///C:/Users/kohji/OneDrive/01_%E8%A8%98%E9%8C%B2/%E9%A0%BB%E5%BA%A6%E5%B0%91/%E5%AE%97%E6%95%99/%E3%82%AA%E3%82%A6%E3%83%A0%E7%9C%9F%E7%90%86%E6%95%99/%E3%82%AA%E3%82%A6%E3%83%A0%E7%9C%9F%E7%90%86%E6%95%99.pdf"
     },
     {
-      "id": 24,
+      "id": 26,
       "name": "幸福の科学",
       "classification": "日本の新宗教",
       "philosophy": "自分磨きと他者愛で\n幸福を目指す",
@@ -735,7 +793,7 @@ const RELIGION_DATA = {
       "pdf_url": "file:///C:/Users/kohji/OneDrive/01_%E8%A8%98%E9%8C%B2/%E9%A0%BB%E5%BA%A6%E5%B0%91/%E5%AE%97%E6%95%99/%E5%B9%B8%E7%A6%8F%E3%81%AE%E7%A7%91%E5%AD%A6/%E5%B9%B8%E7%A6%8F%E3%81%AE%E7%A7%91%E5%AD%A6.pdf"
     },
     {
-      "id": 25,
+      "id": 27,
       "name": "PL教団",
       "classification": "日本の新宗教",
       "philosophy": "「人生は芸術である」\nで真の幸福を享受",
@@ -765,7 +823,7 @@ const RELIGION_DATA = {
       "pdf_url": "file:///C:/Users/kohji/OneDrive/01_%E8%A8%98%E9%8C%B2/%E9%A0%BB%E5%BA%A6%E5%B0%91/%E5%AE%97%E6%95%99/PL%E6%95%99%E5%9B%A3/PL%E6%95%99%E5%9B%A3.pdf"
     },
     {
-      "id": 26,
+      "id": 28,
       "name": "サイエントロジー",
       "classification": "一神教",
       "philosophy": "肉体・心を超越した\n霊魂で自由に到達",
@@ -793,7 +851,7 @@ const RELIGION_DATA = {
       "pdf_url": "file:///C:/Users/kohji/OneDrive/01_%E8%A8%98%E9%8C%B2/%E9%A0%BB%E5%BA%A6%E5%B0%91/%E5%AE%97%E6%95%99/%E3%82%B5%E3%82%A4%E3%82%A8%E3%83%B3%E3%83%88%E3%83%AD%E3%82%B8%E3%83%BC/%E3%82%B5%E3%82%A4%E3%82%A8%E3%83%B3%E3%83%88%E3%83%AD%E3%82%B8%E3%83%BC.pdf"
     },
     {
-      "id": 27,
+      "id": 29,
       "name": "統一教会",
       "classification": "一神教",
       "philosophy": "結婚式で罪を清め、\n理想的な家庭を築く",
@@ -821,7 +879,7 @@ const RELIGION_DATA = {
       "pdf_url": "file:///C:/Users/kohji/OneDrive/01_%E8%A8%98%E9%8C%B2/%E9%A0%BB%E5%BA%A6%E5%B0%91/%E5%AE%97%E6%95%99/%E7%B5%B1%E4%B8%80%E6%95%99%E4%BC%9A/%E7%B5%B1%E4%B8%80%E6%95%99%E4%BC%9A.pdf"
     },
     {
-      "id": 28,
+      "id": 30,
       "name": "立正佼成会",
       "classification": "日本の新宗教",
       "philosophy": "日々の生活で心を整え他者の幸せに尽くす",
@@ -842,11 +900,69 @@ const RELIGION_DATA = {
         "法華経"
       ],
       "videos": [],
-      "video_url": "https://1drv.ms/f/c/2840b1886e3c6012/IgCvFVuvRCD_RoCfYIqTLqLYAUr1tTFJbHFsTuIkrIZl0js?e=ERoOgb",
+      "video_url": "https://www.youtube.com/playlist?list=PLDLJr4l_E2bqXcemi0Va0FoR1cqqu1Svj",
       "notebooklm_url": "https://notebooklm.google.com/notebook/738cf125-caae-4d6e-a471-36112e0fe6ad",
       "onedrive": "https://1drv.ms/f/c/2840b1886e3c6012/IgCvFVuvRCD_RoCfYIqTLqLYAUr1tTFJbHFsTuIkrIZl0js?e=C6tjMz",
       "png_url": "file:///C:/Users/kohji/OneDrive/01_%E8%A8%98%E9%8C%B2/%E9%A0%BB%E5%BA%A6%E5%B0%91/%E5%AE%97%E6%95%99/%E7%AB%8B%E6%AD%A3%E4%BD%BC%E6%88%90%E4%BC%9A/%E7%AB%8B%E6%AD%A3%E4%BD%BC%E6%88%90%E4%BC%9A.png",
       "pdf_url": "file:///C:/Users/kohji/OneDrive/01_%E8%A8%98%E9%8C%B2/%E9%A0%BB%E5%BA%A6%E5%B0%91/%E5%AE%97%E6%95%99/%E7%AB%8B%E6%AD%A3%E4%BD%BC%E6%88%90%E4%BC%9A/%E7%AB%8B%E6%AD%A3%E4%BD%BC%E6%88%90%E4%BC%9A.pdf"
+    },
+    {
+      "id": 31,
+      "name": "大本",
+      "classification": "その他",
+      "philosophy": "すべての宗教は一つ\n世界平和と地上天国",
+      "founder": "出口なお\n出口王仁三郎",
+      "scripture": "大本神諭\n霊界物語",
+      "place": "京都府綾部市\n亀岡市",
+      "holy_place": "綾部（梅松苑）\n亀岡（天恩郷）",
+      "origin": "1892年",
+      "founded_year": 1892,
+      "extinction": "現存",
+      "believers": "約10万〜20万人",
+      "worship_object": "国常立尊\n豊雲野尊",
+      "events": "大祭",
+      "costume": "",
+      "food": "",
+      "facilities": "神殿",
+      "keywords": [
+        "大本事件\n立て替え立て直し",
+        "芸術は宗教の母\nエスペラント"
+      ],
+      "videos": [],
+      "video_url": "https://www.youtube.com/playlist?list=PLDLJr4l_E2bqXcemi0Va0FoR1cqqu1Svj",
+      "notebooklm_url": "https://notebooklm.google.com/notebook/840479bd-ae65-4f0c-8da7-2e974b78a86d",
+      "onedrive": "https://1drv.ms/f/c/2840b1886e3c6012/IgCDRqAIb6RXRou5rk7SPyVaAbTP5TIdYsHKKPV_MTZ-17o?e=dvNzOs",
+      "png_url": "file:///C:/Users/kohji/OneDrive/01_%E8%A8%98%E9%8C%B2/%E9%A0%BB%E5%BA%A6%E5%B0%91/%E5%AE%97%E6%95%99/%E5%A4%A7%E6%9C%AC/%E5%A4%A7%E6%9C%AC.png",
+      "pdf_url": "file:///C:/Users/kohji/OneDrive/01_%E8%A8%98%E9%8C%B2/%E9%A0%BB%E5%BA%A6%E5%B0%91/%E5%AE%97%E6%95%99/%E5%A4%A7%E6%9C%AC/%E5%A4%A7%E6%9C%AC.pdf"
+    },
+    {
+      "id": 32,
+      "name": "生長の家",
+      "classification": "その他",
+      "philosophy": "人間は完全無欠\n心が境遇をつくる",
+      "founder": "谷口雅春",
+      "scripture": "生命の實相",
+      "place": "日本",
+      "holy_place": "霊峰\n赤石",
+      "origin": "1930年",
+      "founded_year": 1930,
+      "extinction": "現存",
+      "believers": "約40万〜50万人",
+      "worship_object": "宇宙浄化の大神\n生長の家の大神",
+      "events": "春季・秋季式典、\n練成会",
+      "costume": "",
+      "food": "肉食を控える",
+      "facilities": "総本山\n各地の教化部",
+      "keywords": [
+        "唯神実相、日時計、\n人間神の子",
+        "万教帰一\n感謝の生活"
+      ],
+      "videos": [],
+      "video_url": "https://www.youtube.com/playlist?list=PLDLJr4l_E2bqXcemi0Va0FoR1cqqu1Svj",
+      "notebooklm_url": "https://notebooklm.google.com/notebook/c55e6bd8-b4e9-45c4-8a81-b7026d126879",
+      "onedrive": "https://1drv.ms/f/c/2840b1886e3c6012/IgBp14N2JZhdSaFqLQGlqQhwARbuEQIlqfUyenHo7vaR4Mw?e=Ch8r7q",
+      "png_url": "file:///C:/Users/kohji/OneDrive/01_%E8%A8%98%E9%8C%B2/%E9%A0%BB%E5%BA%A6%E5%B0%91/%E5%AE%97%E6%95%99/%E7%94%9F%E9%95%B7%E3%81%AE%E5%AE%B6/%E7%94%9F%E9%95%B7%E3%81%AE%E5%AE%B6.png",
+      "pdf_url": "file:///C:/Users/kohji/OneDrive/01_%E8%A8%98%E9%8C%B2/%E9%A0%BB%E5%BA%A6%E5%B0%91/%E5%AE%97%E6%95%99/%E7%94%9F%E9%95%B7%E3%81%AE%E5%AE%B6/%E7%94%9F%E9%95%B7%E3%81%AE%E5%AE%B6.pdf"
     }
   ]
 };
