@@ -282,6 +282,8 @@ function initData() {
     document.getElementById('searchInput').value = q;
     document.getElementById('clearBtn').style.display = 'block';
     doSearch();
+  } else if (rel) {
+    doSearch();
   } else {
     renderResults([], '');
   }
