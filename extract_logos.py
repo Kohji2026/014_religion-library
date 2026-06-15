@@ -13,7 +13,7 @@ import re
 import zipfile
 from pathlib import Path
 
-INPUT_EXCEL = Path(r"C:\Users\kohji\OneDrive\01_記録\22_宗教一覧.xlsx")
+INPUT_EXCEL = Path(r"C:\Users\kohji\OneDrive\01_記録\22_宗教一覧.xlsx")  # 環境に合わせて変更
 OUTPUT_DIR  = Path(__file__).parent / "logos"
 
 def col_letter_to_num(col_str):

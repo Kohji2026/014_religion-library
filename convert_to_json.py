@@ -22,9 +22,9 @@ from pathlib import Path
 
 # ========== 設定 ==========
 SCRIPT_DIR  = Path(__file__).parent
-INPUT_EXCEL = Path(r"C:\Users\kohji\OneDrive\01_記録\22_宗教一覧.xlsx")
+INPUT_EXCEL = Path(r"C:\Users\kohji\OneDrive\01_記録\22_宗教一覧.xlsx")    # 環境に合わせて変更
 OUTPUT_JSON = SCRIPT_DIR / "religion_data.js"
-MEDIA_BASE  = Path(r"C:\Users\kohji\OneDrive\01_記録\頻度少\宗教")
+MEDIA_BASE  = Path(r"C:\Users\kohji\OneDrive\01_記録\頻度少\宗教")          # 環境に合わせて変更
 
 # ========== 属性インデックス（row 2=インデックス0 → 属性値がある行はrow3以降）==========
 # main_attrsリスト（0-indexed）から属性名とJSONキーの対応
