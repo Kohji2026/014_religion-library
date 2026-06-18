@@ -550,7 +550,7 @@ const RELIGION_DATA = {
         "暦、占術、風水"
       ],
       "videos": [],
-      "video_url": "",
+      "video_url": "https://www.youtube.com/playlist?list=PLDLJr4l_E2brVl-3BC90CuMxlxvdLOdY5",
       "notebooklm_url": "https://notebooklm.google.com/notebook/658a82cb-522f-41b2-b308-effa92a99ba1",
       "onedrive": "https://1drv.ms/f/c/2840b1886e3c6012/IgAwjni7Lh-gRLnPjtzLPh7-AXu8-xYML-yhH4VJrGspQvg?e=vXKDZ6",
       "png_url": "file:///C:/Users/kohji/OneDrive/01_%E8%A8%98%E9%8C%B2/%E9%A0%BB%E5%BA%A6%E5%B0%91/%E5%AE%97%E6%95%99/%E9%99%B0%E9%99%BD%E9%81%93/%E9%99%B0%E9%99%BD%E9%81%93.png",

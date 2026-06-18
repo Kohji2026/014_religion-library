@@ -22,9 +22,23 @@ from pathlib import Path
 
 # ========== 設定 ==========
 SCRIPT_DIR  = Path(__file__).parent
-INPUT_EXCEL = Path(r"C:\Users\kohji\OneDrive\01_記録\22_宗教一覧.xlsx")    # 環境に合わせて変更
+
+def _load_env():
+    """SCRIPT_DIR/.env からパス設定を読み込む"""
+    env = {}
+    env_file = SCRIPT_DIR / ".env"
+    if env_file.exists():
+        for line in env_file.read_text(encoding="utf-8").splitlines():
+            line = line.strip()
+            if line and not line.startswith("#") and "=" in line:
+                k, v = line.split("=", 1)
+                env[k.strip()] = v.strip()
+    return env
+
+_env = _load_env()
+INPUT_EXCEL = Path(_env.get("RELIGION_EXCEL", ""))
 OUTPUT_JSON = SCRIPT_DIR / "religion_data.js"
-MEDIA_BASE  = Path(r"C:\Users\kohji\OneDrive\01_記録\頻度少\宗教")          # 環境に合わせて変更
+MEDIA_BASE  = Path(_env.get("RELIGION_MEDIA_BASE", ""))
 
 # ========== 属性インデックス（row 2=インデックス0 → 属性値がある行はrow3以降）==========
 # main_attrsリスト（0-indexed）から属性名とJSONキーの対応

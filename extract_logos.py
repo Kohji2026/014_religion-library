@@ -13,7 +13,20 @@ import re
 import zipfile
 from pathlib import Path
 
-INPUT_EXCEL = Path(r"C:\Users\kohji\OneDrive\01_記録\22_宗教一覧.xlsx")  # 環境に合わせて変更
+def _load_env():
+    """スクリプトと同じフォルダの .env からパス設定を読み込む"""
+    env = {}
+    env_file = Path(__file__).parent / ".env"
+    if env_file.exists():
+        for line in env_file.read_text(encoding="utf-8").splitlines():
+            line = line.strip()
+            if line and not line.startswith("#") and "=" in line:
+                k, v = line.split("=", 1)
+                env[k.strip()] = v.strip()
+    return env
+
+_env = _load_env()
+INPUT_EXCEL = Path(_env.get("RELIGION_EXCEL", ""))
 OUTPUT_DIR  = Path(__file__).parent / "logos"
 
 def col_letter_to_num(col_str):
