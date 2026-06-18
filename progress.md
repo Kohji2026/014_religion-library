@@ -60,6 +60,10 @@
 - [x] convert_to_json.py 実行 → religion_data.js 更新
 - [x] GitHub push済み
 
+## 2026-06-19 点検対応（2026-06-13実施分）
+- [x] ①【低】モックアップ_書籍検索.html・引き継ぎ_書籍検索企画.md を削除（不要ファイル整理）
+- [x] ②【低】convert_to_json.py・extract_logos.py の絶対パスを .env に切り出し（gitignore済み）
+
 ## メモ
 - Excelソース: `C:\Users\kohji\OneDrive\01_記録\22_宗教一覧.xlsx`
 - インフォグラフィック: `C:\Users\kohji\OneDrive\01_記録\頻度少\宗教\`
