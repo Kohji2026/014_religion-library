@@ -64,6 +64,13 @@
 - [x] ①【低】モックアップ_書籍検索.html・引き継ぎ_書籍検索企画.md を削除（不要ファイル整理）
 - [x] ②【低】convert_to_json.py・extract_logos.py の絶対パスを .env に切り出し（gitignore済み）
 
+## 2026-06-27 歴史タブ年表修正
+- [x] ルーラー（凡例・年号）を `#history-ruler-svg` に分離（sticky固定ヘッダー化）
+- [x] バーSVGと束ねる `#history-zoom-wrap` を追加
+- [x] ズーム時に年号が消える問題・スクロールで流れる問題を解消
+- [x] 1000年ごとの年号を大きく・濃く（font-size 12、font-weight 600）
+- [x] GitHub push済み
+
 ## メモ
 - Excelソース: `C:\Users\kohji\OneDrive\01_記録\22_宗教一覧.xlsx`
 - インフォグラフィック: `C:\Users\kohji\OneDrive\01_記録\頻度少\宗教\`
