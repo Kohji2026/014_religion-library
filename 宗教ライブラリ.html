@@ -309,6 +309,14 @@ button { font-family: inherit; cursor: pointer; }
 #hist-fit-btn:hover { background: var(--accent-bg); color: var(--accent); }
 
 #history-scroll { flex: 1; overflow: auto; padding: 16px; }
+#history-zoom-wrap { display: inline-block; min-width: 100%; transform-origin: top left; }
+#history-ruler-wrap {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--bg3);
+  border-bottom: 1px solid var(--border);
+}
 #history-svg-wrap { display: inline-block; min-width: 100%; }
 
 /* ===== 比較ビュー ===== */
@@ -402,7 +410,10 @@ button { font-family: inherit; cursor: pointer; }
     <button id="hist-fit-btn" onclick="toggleHistoryFit()">⊡ 全体表示</button>
   </div>
   <div id="history-scroll">
-    <div id="history-svg-wrap"></div>
+    <div id="history-zoom-wrap">
+      <div id="history-ruler-wrap"><svg id="history-ruler-svg"></svg></div>
+      <div id="history-svg-wrap"></div>
+    </div>
   </div>
 </div>
 
@@ -778,13 +789,13 @@ function parseFoundedYear(r) {
 }
 
 function toggleHistoryFit() {
-  const scroll = document.getElementById('history-scroll');
-  const wrap = document.getElementById('history-svg-wrap');
+  const scroll    = document.getElementById('history-scroll');
+  const wrap      = document.getElementById('history-svg-wrap');
+  const zoomWrap  = document.getElementById('history-zoom-wrap');
   const btn = document.getElementById('hist-fit-btn');
   const isFit = wrap.dataset.fit === '1';
   if (isFit) {
-    wrap.style.transform = '';
-    wrap.style.transformOrigin = '';
+    zoomWrap.style.transform = '';
     scroll.style.overflow = 'auto';
     wrap.dataset.fit = '0';
     btn.textContent = '⊡ 全体表示';
@@ -795,9 +806,8 @@ function toggleHistoryFit() {
       const svgW = parseFloat(svgEl.getAttribute('width'));
       const availW = scroll.clientWidth - 32;
       const scale = Math.min(1, availW / svgW);
-      wrap.style.transformOrigin = 'top left';
-      wrap.style.transform = `scale(${scale})`;
-      wrap.style.minWidth = 'unset';
+      zoomWrap.style.transformOrigin = 'top left';
+      zoomWrap.style.transform = `scale(${scale})`;
       scroll.style.overflow = 'hidden';
       wrap.dataset.fit = '1';
       btn.textContent = '↔ スクロール表示';
@@ -816,7 +826,7 @@ function renderHistory() {
   const PX_PER_YEAR = 0.5;
   const ROW_H  = 28;
   const LABEL_W = 120;
-  const HEADER_H = 45;
+  const RULER_H = 52;
 
   const svgW = LABEL_W + yearRange * PX_PER_YEAR + 180;
 
@@ -843,30 +853,59 @@ function renderHistory() {
   });
 
   const maxRow = Math.max(0, ...rows.map(item => item.row));
-  const svgH   = HEADER_H + (maxRow + 1) * ROW_H + 30;
+  const svgH   = (maxRow + 1) * ROW_H + 30;
 
-  // 目盛線
-  let gridHtml = '';
   const gridStep = yearRange > 2000 ? 200 : 100;
+  const zeroX = LABEL_W + (0 - minYear) * PX_PER_YEAR;
+  const clsList = ['一神教','多神教','仏教系','日本の新宗教','その他'];
+
+  // ── ルーラーSVG（凡例 + 年号ラベル）──
+  let rulerHtml = '';
+  // 凡例
+  clsList.forEach((cls, i) => {
+    const lx = LABEL_W + i * 130;
+    rulerHtml += `<rect x="${lx}" y="4" width="12" height="12" rx="2" fill="${clsColor(cls)}"/>
+      <text x="${lx + 16}" y="14" font-size="11" fill="${clsColor(cls)}" font-weight="500">${cls}</text>`;
+  });
+  // 年号ラベル + 目盛り上部
   for (let y = Math.ceil(minYear / gridStep) * gridStep; y <= maxYear; y += gridStep) {
     const x = LABEL_W + (y - minYear) * PX_PER_YEAR;
     const isBig = y % (gridStep * 5) === 0 || y === 0;
     const label = y < 0 ? `B.C.${Math.abs(y)}` : (y === 0 ? '紀元' : `${y}`);
-    gridHtml += `<line x1="${x.toFixed(1)}" y1="${HEADER_H - 10}" x2="${x.toFixed(1)}" y2="${svgH - 10}"
-      stroke="${isBig ? '#C8C4C0' : '#E8E5E2'}" stroke-width="${isBig ? 1 : 0.5}"/>
-      <text x="${x.toFixed(1)}" y="${HEADER_H - 14}" text-anchor="middle" font-size="10" fill="#9B9793">${label}</text>`;
+    rulerHtml += `<line x1="${x.toFixed(1)}" y1="${isBig ? 26 : 34}" x2="${x.toFixed(1)}" y2="${RULER_H}"
+      stroke="${isBig ? '#A8A4A0' : '#D0CECC'}" stroke-width="${isBig ? 1.5 : 0.8}"/>
+      <text x="${x.toFixed(1)}" y="${isBig ? 34 : 32}" text-anchor="middle"
+        font-size="${isBig ? 12 : 9}" font-weight="${isBig ? '600' : '400'}"
+        fill="${isBig ? '#3A3632' : '#9B9793'}">${label}</text>`;
+  }
+  // 紀元0年ラベル（ルーラー内）
+  rulerHtml += `<text x="${zeroX.toFixed(1)}" y="34" text-anchor="middle" font-size="11" fill="#534AB7" font-weight="500">紀元0年</text>`;
+  const rulerSvg = document.getElementById('history-ruler-svg');
+  rulerSvg.setAttribute('width', svgW);
+  rulerSvg.setAttribute('height', RULER_H);
+  rulerSvg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+  rulerSvg.style.fontFamily = "inherit";
+  rulerSvg.style.display = 'block';
+  rulerSvg.innerHTML = rulerHtml +
+    `<line x1="${LABEL_W}" y1="${RULER_H - 1}" x2="${svgW - 10}" y2="${RULER_H - 1}" stroke="var(--border)" stroke-width="1"/>`;
+
+  // ── バーSVG（グリッド + バー）──
+  let gridHtml = '';
+  for (let y = Math.ceil(minYear / gridStep) * gridStep; y <= maxYear; y += gridStep) {
+    const x = LABEL_W + (y - minYear) * PX_PER_YEAR;
+    const isBig = y % (gridStep * 5) === 0 || y === 0;
+    gridHtml += `<line x1="${x.toFixed(1)}" y1="0" x2="${x.toFixed(1)}" y2="${svgH}"
+      stroke="${isBig ? '#C8C4C0' : '#E8E5E2'}" stroke-width="${isBig ? 1 : 0.5}"/>`;
   }
 
-  // バー描画
   let barsHtml = '';
   rows.forEach(({r, start, row}) => {
     if (start == null) return;
     const x = LABEL_W + (start - minYear) * PX_PER_YEAR;
     const w = Math.max(4, 80 * PX_PER_YEAR);
-    const y_pos = HEADER_H + row * ROW_H + 4;
+    const y_pos = row * ROW_H + 4;
     const barH = ROW_H - 8;
     const color = clsColor(r.classification);
-
     barsHtml += `
       <g class="timeline-bar" onclick="selectReligionByName('${r.name}')" style="cursor:pointer" title="${r.name}（${r.origin || ''}）">
         <rect x="${x.toFixed(1)}" y="${y_pos}" width="${w.toFixed(1)}" height="${barH}"
@@ -878,42 +917,25 @@ function renderHistory() {
       </g>`;
   });
 
-  // 分類帯（上部）
-  const clsList = ['一神教','多神教','仏教系','日本の新宗教','その他'];
-  let bandHtml = `<g>`;
-  // 現在値（西暦0を中心に表示ライン）
-  const zeroX = LABEL_W + (0 - minYear) * PX_PER_YEAR;
-  bandHtml += `<line x1="${zeroX.toFixed(1)}" y1="${HEADER_H - 10}" x2="${zeroX.toFixed(1)}" y2="${svgH - 10}"
-    stroke="#534AB7" stroke-width="1.5" stroke-dasharray="4,3" opacity="0.6"/>
-    <text x="${zeroX.toFixed(1)}" y="${HEADER_H - 26}" text-anchor="middle" font-size="10" fill="#534AB7">紀元0年</text>`;
-  bandHtml += `</g>`;
-
-  // 凡例
-  let legendHtml = '';
-  clsList.forEach((cls, i) => {
-    const lx = LABEL_W + i * 130;
-    legendHtml += `<rect x="${lx}" y="4" width="12" height="12" rx="2" fill="${clsColor(cls)}"/>
-      <text x="${lx + 16}" y="14" font-size="11" fill="${clsColor(cls)}" font-weight="500">${cls}</text>`;
-  });
+  // 紀元0年の縦線
+  const zeroLine = `<line x1="${zeroX.toFixed(1)}" y1="0" x2="${zeroX.toFixed(1)}" y2="${svgH}"
+    stroke="#534AB7" stroke-width="1.5" stroke-dasharray="4,3" opacity="0.6"/>`;
 
   wrap.innerHTML = `<svg width="${svgW}" height="${svgH}" xmlns="http://www.w3.org/2000/svg"
     style="font-family:'UD デジタル 教科書体 NK','Yu Gothic','Meiryo',sans-serif">
-    <rect width="${svgW}" height="${svgH}" fill="#FAFAF9"/>
-    <g>${legendHtml}</g>
-    ${gridHtml}
-    ${bandHtml}
-    ${barsHtml}
+    ${gridHtml}${zeroLine}${barsHtml}
   </svg>`;
   initHistoryZoom();
 }
 
 function initHistoryZoom() {
-  const scroll = document.getElementById('history-scroll');
-  const wrap   = document.getElementById('history-svg-wrap');
+  const scroll    = document.getElementById('history-scroll');
+  const wrap      = document.getElementById('history-svg-wrap');
+  const zoomWrap  = document.getElementById('history-zoom-wrap');
   if (wrap.dataset.zoomInit) return;
   wrap.dataset.zoomInit = '1';
   let zoom = 1;
-  function applyZoom() { wrap.style.zoom = zoom === 1 ? '' : zoom; }
+  function applyZoom() { zoomWrap.style.zoom = zoom === 1 ? '' : zoom; }
   wrap._tlResetZoom = () => { zoom = 1; applyZoom(); };
   scroll.addEventListener('wheel', e => {
     if (wrap.dataset.fit === '1') return;
