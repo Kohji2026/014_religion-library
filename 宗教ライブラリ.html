@@ -292,6 +292,46 @@ button { font-family: inherit; cursor: pointer; }
 .book-guide-title { font-weight: 500; color: var(--text); }
 .book-guide-chapter { color: var(--text3); }
 
+/* ===== 紡理道セクション ===== */
+.tsumuridou-section {
+  padding: 16px 24px;
+  border-top: 2px solid #C9A84C40;
+  background: linear-gradient(to right, #FBF6EC, var(--bg3));
+}
+.tsumuridou-header {
+  display: flex; align-items: center; gap: 8px;
+  margin-bottom: 12px;
+}
+.tsumuridou-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 10px; font-weight: 600; letter-spacing: .06em;
+  color: #8A6A20;
+  background: #F2E6C2;
+  border: 1px solid #C9A84C60;
+  border-radius: 20px;
+  padding: 3px 10px;
+}
+.tsumuridou-vol {
+  font-size: 10px; color: #A08040; margin-left: auto;
+}
+.tsumuridou-body {
+  border-left: 3px solid #C9A84C;
+  padding-left: 14px;
+  margin-left: 2px;
+}
+.tsumuridou-text {
+  font-size: 13px;
+  color: #3A3020;
+  line-height: 1.75;
+  font-style: italic;
+}
+.tsumuridou-note {
+  margin-top: 6px;
+  font-size: 11px;
+  color: #8A7A55;
+  font-style: normal;
+}
+
 /* ===== 歴史ビュー ===== */
 #view-history { overflow: hidden; flex-direction: column; }
 #history-controls {
@@ -717,6 +757,113 @@ function renderDetail() {
 
   // 書籍ガイドセクション（books_index.js 不在時は非表示）
   renderBookGuide(r.name, panel);
+
+  // 紡理道セクション
+  renderTsumuridouNote(r.name, panel);
+}
+
+// ============================================================
+//  紡理道ノート（浩二さんの思想・各宗教への考察）
+//  ※差分追記のみ。追加時は宗教名をキーに entries[] へ足す。
+// ============================================================
+const TSUMURIDOU_NOTES = {
+  '仏教':         { entries: [
+    { vol: 'Vol.002（2026年2月）', text: '「痛み × 抵抗 ＝ 苦しみ」。抵抗しない（＝悟りを開く）ことで苦しみはゼロになる。' },
+    { vol: 'Vol.004（2026年4月）', text: '四法印——諸行無常・諸法無我を理解し、思い通りにしようとする「執着」を手放すことで、涅槃寂静（心の平和）を目指す。' },
+  ]},
+  '道教':         { entries: [
+    { vol: 'Vol.002（2026年2月）', text: '無為自然・上善如水。「ありのまま」を生きる極上の教え。紡理道の理想的な模範解答に最も近い。' },
+  ]},
+  'ゾロアスター教': { entries: [
+    { vol: 'Vol.002（2026年2月）', text: '善き思い・善き行い・善き言葉。「言葉」を善きものに含める点が、紡理道の活動と合致する。' },
+  ]},
+  'ヒンドゥー教': { entries: [
+    { vol: 'Vol.002（2026年2月）', text: '創造・維持・破壊の融合。多様な神々の融合と進化の過程が、自身の思想形成と重なる。' },
+  ]},
+  '儒教':         { entries: [
+    { vol: 'Vol.002（2026年2月）', text: '一人の人間の命に響く教えは少ないが、「殺し合わないための生存戦略」としての深みがある。' },
+  ]},
+  'ジャイナ教':   { entries: [
+    { vol: 'Vol.003（2026年3月）', text: '「群盲象を評す」／相対主義。「ある点からすると」という枕詞を用い、独断と極端を避ける。' },
+  ]},
+  'シク教':       { entries: [
+    { vol: 'Vol.003（2026年3月）', text: '言動一致・仕組み化された平等。理念を言葉だけに終わらせず、徹底した実行と仕組みに落とし込む。' },
+  ]},
+  '神道':         { entries: [
+    { vol: 'Vol.003（2026年3月）', text: '素朴と感謝。純粋に「神様のおかげ」と感謝する、揺るぎない心の安定。' },
+  ]},
+  '禅':           { entries: [
+    { vol: 'Vol.003（2026年3月）', text: '教外別伝・作務。言葉に依存せず、掃除や料理などの日常の労働（家事）を通じて学ぶ。' },
+  ]},
+  'バラモン教':   { entries: [
+    { vol: 'Vol.003（2026年3月）', text: '解脱（モークシャ）。「今」が最後という思いで精一杯向き合い、悔いのない人生を送る。' },
+  ]},
+  'モルモン教':   { entries: [
+    { vol: 'Vol.003（2026年3月）', text: '悲しみを経験するからこそ、家族との喜びを真に理解できる。' },
+  ]},
+  'マニ教':       { entries: [
+    { vol: 'Vol.003（2026年3月）', text: '諸宗教の融合。複数の教えの良い点を取り入れる柔軟な姿勢。' },
+  ]},
+  '黒住教':       { entries: [
+    { vol: 'Vol.004（2026年4月）', text: '「有難きを失わない」。呼吸・食事など当たり前の日常を「生かされている証」として感謝し、疑いの心（陰気）を払う。' },
+  ]},
+  '天理教':       { entries: [
+    { vol: 'Vol.004（2026年4月）', text: '陽気ぐらし。自分の体すら借り物だが、「心」だけは自由に使える。どんな状況でも陽気に暮らす心は自分の意志で育てられる。' },
+  ]},
+  '金光教':       { entries: [
+    { vol: 'Vol.004（2026年4月）', text: '布教をせず、自分自身が「美しい花」になることを目指す姿勢。' },
+  ]},
+  '霊友会':       { entries: [
+    { vol: 'Vol.005（2026年5月）', text: '先祖供養と墓終いを通じ、後世への負担軽減と先祖への能動的な向き合いを実践。' },
+  ]},
+  '創価学会':     { entries: [
+    { vol: 'Vol.005（2026年5月）', text: '「努力すれば運命を変えられる」という能動性で信者を組織に従属させるメカニズムを分析。評価は他者が決めると完全に諦めた上で純粋に働く喜びを持てば、依存から自由へと転じる。' },
+  ]},
+  'オウム真理教': { entries: [
+    { vol: 'Vol.005（2026年5月）', text: '「ポア」等の自己神格化と恐怖による信者支配を「インチキ」と断罪。現在の職場環境をこの構図に重ね、静かに自戒する。' },
+  ]},
+  '幸福の科学':   { entries: [
+    { vol: 'Vol.005（2026年5月）', text: '学びのエッセンス抽出手法には共感するが、絶対的権威を用いた経営戦略を批判。' },
+  ]},
+  'PL教団':       { entries: [
+    { vol: 'Vol.005（2026年5月）', text: '「人生は芸術である」という思想を高く評価。' },
+  ]},
+};
+
+function renderTsumuridouNote(religionName, panel) {
+  const data = TSUMURIDOU_NOTES[religionName];
+  if (!data || !data.entries || data.entries.length === 0) return;
+
+  const section = document.createElement('div');
+  section.className = 'tsumuridou-section';
+
+  const header = document.createElement('div');
+  header.className = 'tsumuridou-header';
+  const badge = document.createElement('span');
+  badge.className = 'tsumuridou-badge';
+  badge.textContent = '🌀 紡理道より';
+  header.appendChild(badge);
+  section.appendChild(header);
+
+  data.entries.forEach((entry, i) => {
+    const body = document.createElement('div');
+    body.className = 'tsumuridou-body';
+    if (i < data.entries.length - 1) body.style.marginBottom = '12px';
+
+    const textEl = document.createElement('div');
+    textEl.className = 'tsumuridou-text';
+    textEl.textContent = entry.text;
+
+    const noteEl = document.createElement('div');
+    noteEl.className = 'tsumuridou-note';
+    noteEl.textContent = entry.vol;
+
+    body.appendChild(textEl);
+    body.appendChild(noteEl);
+    section.appendChild(body);
+  });
+
+  panel.appendChild(section);
 }
 
 // ============================================================
