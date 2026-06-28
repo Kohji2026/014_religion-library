@@ -699,11 +699,12 @@ function renderDetail() {
   const logoStyle = `color:${color};background:${clsBgColor(r.classification)};border-color:${color}40;`;
   const thumbHtml = `<div class="symbol-logo" style="${logoStyle}"><img src="${logoPath}" alt="${r.name}" onerror="this.style.display='none';this.parentElement.textContent='${sym}'"></div>`;
 
-  // ボタン（インフォグラフィック追加・PDF・動画PL・NotebookLM）
+  // ボタン（インフォグラフィック追加・PDF・動画PL・NotebookLM・紡星図）
   const infographicBtn = r.png_url ? `<div class="infographic-wrap"><a href="${r.png_url}" target="_blank" class="action-link infographic">🖼 インフォグラフィック</a><div class="img-hover-preview"><img src="${r.png_url}" alt="${r.name}"></div></div>` : '';
   const pdfBtn         = r.pdf_url ? `<a href="${r.pdf_url}" target="_blank" class="action-link pdf">📄 PDF資料</a>` : '';
   const videoBtn       = r.video_url      ? `<a href="${r.video_url}"      target="_blank" class="action-link video">▶ 動画</a>` : '';
   const nblmBtn        = r.notebooklm_url ? `<a href="${r.notebooklm_url}" target="_blank" class="action-link notebooklm">🤖 NotebookLM</a>` : '';
+  const hoshizuBtn     = `<a href="../001_紡星図/紡星図.html?religion=${encodeURIComponent(r.name)}" target="_blank" class="action-link" style="border-color:#6a4aaa;color:#aa88dd;background:#1a0e26;">🌟 紡星図</a>`;
 
   // キーワードタグ
   const kwHtml = (r.keywords || []).length > 0
@@ -720,7 +721,7 @@ function renderDetail() {
           &nbsp; ${r.origin || ''} &nbsp; ${r.place || ''}
         </div>
         <div class="action-row">
-          ${infographicBtn}${pdfBtn}${videoBtn}${nblmBtn}
+          ${infographicBtn}${pdfBtn}${videoBtn}${nblmBtn}${hoshizuBtn}
         </div>
       </div>
     </div>
