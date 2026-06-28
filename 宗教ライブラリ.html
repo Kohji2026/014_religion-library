@@ -506,6 +506,13 @@ function init() {
   updateStats();
   renderSidebar();
   renderDetail();
+
+  // 紡星図からのリンク対応: ?religion=仏教
+  const _rParam = new URLSearchParams(location.search).get('religion');
+  if (_rParam) {
+    const _rIdx = DATA.religions.findIndex(r => r.name === _rParam);
+    if (_rIdx >= 0) selectReligion(_rIdx);
+  }
 }
 
 // ============================================================
