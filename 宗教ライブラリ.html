@@ -547,8 +547,14 @@ function switchView(name) {
 function onSearch(q) {
   searchQuery = q.trim();
   document.getElementById('search-clear').style.display = q ? 'block' : 'none';
+  const activeView = document.querySelector('.view.active');
+  if (activeView && activeView.id === 'view-religion' && searchQuery) {
+    const hits = sortedReligions();
+    if (hits.length) currentIdx = DATA.religions.indexOf(hits[0]);
+  }
   renderSidebar();
-  if (name === 'compare') renderCompare();
+  if (activeView && activeView.id === 'view-religion') renderDetail();
+  if (activeView && activeView.id === 'view-compare') renderCompare();
 }
 function clearSearch() {
   document.getElementById('search-input').value = '';
