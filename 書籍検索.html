@@ -10,6 +10,7 @@
   --card:#FFFFFF; --border:#E0DEDB; --text:#1A1918;
   --muted:#8A8680; --accent:#534AB7; --accent-bg:#EEEDFE;
   --hit:#FFF3C4; --radius:8px; --shadow:0 1px 3px rgba(0,0,0,.08);
+  --shelf-wood:#8A6A44; --shelf-wood2:#6E5233; --shelf-amber:#C9A84C;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
 body{font-family:'UD デジタル 教科書体 NK','Yu Gothic','Meiryo',sans-serif;
@@ -85,6 +86,90 @@ main{padding:16px 24px 60px;max-width:1180px;margin:0 auto;}
   display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
 mark{background:var(--hit);padding:0 1px;border-radius:2px;}
 
+/* ============================================================
+   本棚エントランス（検索語が空のときに表示）
+   構造：単一グリッド .shelf-grid ＋ .shelf-unit{display:contents}
+   （表紙=row1／棚板=row2（全列ぶち抜き）／書誌情報=row3 → 2列時も対応関係が崩れない）
+   ============================================================ */
+.bookshelf.anim{animation:shelfIn .35s ease;}  /* 初回のみ付与（検索⇔本棚の往復では再生しない） */
+@keyframes shelfIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
+
+.shelf-head{text-align:center;margin:26px 0 6px;}
+.shelf-head .t{font-size:16.5px;font-weight:bold;letter-spacing:.06em;}
+.shelf-head .s{font-size:12.5px;color:var(--muted);margin-top:2px;}
+
+.shelf-grid{display:grid;grid-template-columns:repeat(4,1fr);
+  column-gap:26px;max-width:1020px;margin:18px auto 0;padding:0 12px;}
+.shelf-unit{display:contents;}
+.shelf-unit.dimmed .cover-btn,.shelf-unit.dimmed .book-info{opacity:.35;} /* 書籍チップ除外時 */
+
+/* 表紙（row1・棚板の上に立つ）— キーボード操作可能な button */
+.cover-btn{grid-row:1;align-self:end;justify-self:center;
+  background:none;border:none;padding:0;cursor:pointer;font-family:inherit;
+  position:relative;transition:transform .18s ease;}
+.cover-btn:hover,.cover-btn:focus-visible{transform:translateY(-10px);outline:none;}
+.cover-btn:focus-visible .cover-img,.cover-btn:focus-visible .cover-ph{
+  outline:3px solid var(--accent);outline-offset:2px;}
+.cover-btn:hover .cover-img{box-shadow:0 18px 30px -8px rgba(60,40,10,.45);}
+.cover-img{width:158px;max-width:100%;aspect-ratio:210/297;object-fit:cover;display:block;
+  border-radius:3px 6px 6px 3px;background:var(--bg3);
+  border:1px solid rgba(0,0,0,.12);
+  box-shadow:0 10px 18px -6px rgba(60,40,10,.35);}
+/* 書籍ブランド色を左背表紙ラインとして効かせる */
+.cover-btn::before{content:"";position:absolute;left:0;top:0;bottom:0;width:6px;
+  border-radius:3px 0 0 3px;background:var(--book-color,#999);opacity:.9;z-index:2;}
+/* 画像が無い環境向けプレースホルダー表紙 */
+.cover-ph{width:158px;aspect-ratio:210/297;border-radius:3px 6px 6px 3px;
+  display:none;flex-direction:column;justify-content:center;gap:8px;padding:14px 12px 14px 18px;
+  color:#fff;font-size:14.5px;font-weight:bold;line-height:1.5;letter-spacing:.04em;text-align:left;
+  background:linear-gradient(150deg,var(--book-color,#777) 0%,#3a3530 100%);
+  box-shadow:0 10px 18px -6px rgba(60,40,10,.35);}
+.cover-ph small{font-size:10.5px;font-weight:normal;opacity:.75;}
+
+/* 棚板（row2・全列ぶち抜き） */
+.shelf-board{grid-row:2;grid-column:1/-1;height:16px;border-radius:3px;
+  margin:0 -12px;  /* 表紙列より少し張り出す */
+  background:linear-gradient(180deg,var(--shelf-wood) 0%,var(--shelf-wood2) 78%,#4d3a24 100%);
+  box-shadow:0 5px 12px -2px rgba(70,50,20,.4), inset 0 1px 0 rgba(255,235,190,.35);
+  position:relative;}
+.shelf-board::after{content:"";position:absolute;left:0;right:0;top:3px;height:1px;
+  background:linear-gradient(90deg,transparent,var(--shelf-amber),transparent);opacity:.5;}
+
+/* 書誌情報（row3） */
+.book-info{grid-row:3;text-align:center;margin-top:16px;min-width:0;}
+.book-info .ttl{font-size:13.5px;font-weight:bold;line-height:1.45;cursor:pointer;
+  background:none;border:none;font-family:inherit;color:var(--text);}
+.book-info .ttl:hover,.book-info .ttl:focus-visible{color:var(--accent);outline:none;text-decoration:underline;}
+.book-info .meta{font-size:11.5px;color:var(--muted);margin:2px 0 8px;}
+.toc-chips{display:flex;flex-wrap:wrap;gap:4px;justify-content:center;}
+.toc-chip{font-size:11px;padding:2px 9px 2px 7px;border-radius:11px;cursor:pointer;
+  border:1px solid color-mix(in srgb,var(--book-color,#999) 45%,var(--border));
+  background:color-mix(in srgb,var(--book-color,#999) 7%,var(--card));
+  color:var(--text);font-family:inherit;white-space:nowrap;}
+.toc-chip::before{content:"▸";font-size:9px;margin-right:3px;color:var(--book-color,#999);}
+.toc-chip:hover,.toc-chip:focus-visible{
+  background:color-mix(in srgb,var(--book-color,#999) 78%,black); /* 白文字コントラスト確保 */
+  color:#fff;border-color:color-mix(in srgb,var(--book-color,#999) 78%,black);outline:none;}
+.toc-chip:hover::before,.toc-chip:focus-visible::before{color:#fff;}
+.toc-chip.hl{border-width:2px;font-weight:bold;
+  border-color:var(--book-color,#999);box-shadow:0 0 0 2px color-mix(in srgb,var(--book-color,#999) 25%,transparent);}
+
+.shelf-hint{text-align:center;font-size:12px;color:var(--muted);margin-top:30px;line-height:2;}
+
+/* レスポンシブ：≤820px は「本単位の縦カード」に組み替え（棚板は本ごとのセグメントに） */
+@media (max-width:820px){
+  .shelf-grid{grid-template-columns:repeat(2,1fr);row-gap:30px;max-width:560px;}
+  .shelf-unit{display:flex;flex-direction:column;align-items:center;}
+  .cover-btn{align-self:center;}
+  .shelf-board{display:none;}                 /* ぶち抜き棚板は非表示 */
+  .shelf-unit::after{content:"";order:2;      /* 本ごとの棚板セグメント */
+    width:88%;height:10px;border-radius:3px;margin-top:0;
+    background:linear-gradient(180deg,var(--shelf-wood),var(--shelf-wood2));
+    box-shadow:0 4px 8px -2px rgba(70,50,20,.4), inset 0 1px 0 rgba(255,235,190,.35);}
+  .cover-btn{order:1;}
+  .book-info{order:3;margin-top:12px;}
+}
+
 /* ===== ビューア ===== */
 .viewer{position:fixed;inset:0;background:rgba(20,18,16,.82);display:none;z-index:50;
   align-items:center;justify-content:center;flex-direction:column;}
@@ -98,13 +183,22 @@ mark{background:var(--hit);padding:0 1px;border-radius:2px;}
 .v-img-wrap{overflow-y:auto;background:var(--bg2);flex:1;display:flex;
   align-items:center;justify-content:center;min-height:300px;}
 .v-img-wrap img{max-width:100%;height:auto;display:block;}
-.v-nav{display:flex;align-items:center;gap:8px;padding:10px 16px;
-  border-top:1px solid var(--border);flex-wrap:wrap;}
+
+/* スライダー行（画像と操作の区切りとして border-top を持つ） */
+.v-slider-row{display:flex;align-items:center;gap:12px;padding:8px 16px 0;
+  border-top:1px solid var(--border);}
+.v-slider-row input[type=range]{flex:1;accent-color:var(--vbook-color,#534AB7);height:4px;cursor:pointer;}
+.v-pg-jump{font-size:12.5px;color:var(--muted);cursor:pointer;white-space:nowrap;
+  border-bottom:1px dashed var(--border);padding:1px 2px;}  /* 常時「編集できそう」な点線 */
+.v-pg-jump:hover{color:var(--text);border-bottom-color:var(--muted);}
+.v-pg-input{width:52px;font-size:12.5px;font-family:inherit;padding:1px 4px;
+  border:1px solid var(--accent);border-radius:4px;display:none;}
+
+.v-nav{display:flex;align-items:center;gap:8px;padding:8px 16px 10px;flex-wrap:wrap;}
 .v-nav .nav-btn{padding:6px 14px;border-radius:6px;border:1px solid var(--border);
   background:var(--card);cursor:pointer;font-family:inherit;font-size:13px;color:var(--text);}
 .v-nav .nav-btn:hover:not(:disabled){border-color:var(--accent);color:var(--accent);}
 .v-nav .nav-btn:disabled{opacity:.4;cursor:default;}
-.v-nav .pg{font-size:13px;color:var(--muted);margin:0 4px;}
 .v-actions{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap;}
 .v-actions a{padding:6px 14px;border-radius:6px;border:1px solid var(--border);
   background:var(--card);font-family:inherit;font-size:13px;color:var(--text);
@@ -205,9 +299,15 @@ section.pane.active{display:block;}
     <div class="v-img-wrap" id="vImgWrap">
       <img id="vImg" src="" alt="">
     </div>
+    <div class="v-slider-row">
+      <input type="range" id="vSlider" min="0" value="0" aria-label="見開き移動">
+      <span class="v-pg-jump" id="vPg" title="クリックで番号ジャンプ" onclick="togglePgInput(true)"></span>
+      <input type="number" class="v-pg-input" id="vPgInput" min="1" aria-label="見開き番号"
+             onkeydown="if(event.key==='Enter')jumpToInput();if(event.key==='Escape')togglePgInput(false)"
+             onblur="togglePgInput(false)">
+    </div>
     <div class="v-nav">
       <button class="nav-btn" id="vPrev" onclick="viewerNav(-1)">← 前の見開き</button>
-      <span class="pg" id="vPg"></span>
       <button class="nav-btn" id="vNext" onclick="viewerNav(1)">次の見開き →</button>
       <div class="v-actions">
         <a id="vHist" class="hist-btn" href="#" target="_blank">🏛 歴史検索で調べる</a>
@@ -399,9 +499,10 @@ function renderResults(results, rawQ) {
   const countEl = document.getElementById('hitCount');
 
   if (!rawQ) {
-    el.innerHTML = '';
+    renderShelf(el);
     countEl.textContent = `全 ${TOTAL_SPREADS} 見開き`;
     updateTagCounts([]);
+    if (activeRelTag !== 'all') highlightShelfChips(activeRelTag);
     return;
   }
 
@@ -452,6 +553,102 @@ function resetFilters() {
   document.querySelectorAll('#bookChips .chip').forEach(c => c.classList.add('on'));
   setActiveRelTag('all');
   doSearch();
+}
+
+// ============================================================
+// 本棚エントランス（検索語が空のときの入り口）
+// ============================================================
+let shelfAnimPlayed = false; // 初回のみフェードインを再生する
+
+function buildShelfData() {
+  return BOOK_DEFS.map(def => {
+    const book = def.ref();
+    if (!book) return null;
+    // tagRanges → 目次チップ（from_page昇順）
+    const raw = [];
+    for (const [rel, ranges] of Object.entries(BOOKS_INDEX.tagRanges || {})) {
+      const r = ranges.find(x => x.book === def.key);
+      if (r) raw.push({ rel, page: r.from_page, chapter: r.chapter });
+    }
+    raw.sort((a, b) => a.page - b.page);
+    const toc = mergeSamePage(raw);
+    return {
+      key: def.key, cls: def.cls,
+      title: book.meta.title, color: book.meta.color,
+      spreads: book.meta.totalSpreads,
+      cover: (BOOK_PAGES[def.key] && BOOK_PAGES[def.key][0]) ? BOOK_PAGES[def.key][0].thumb : '',
+      toc,
+    };
+  }).filter(Boolean);
+}
+
+// 同一ページを指す複数タグを1チップに集約（3つ以上→「そのほかの宗教」、2つ→「A・B」連結）
+function mergeSamePage(raw) {
+  const groups = new Map();
+  for (const item of raw) {
+    if (!groups.has(item.page)) groups.set(item.page, []);
+    groups.get(item.page).push(item);
+  }
+  const result = [];
+  for (const items of groups.values()) {
+    const rels = items.map(i => i.rel);
+    result.push({
+      label: items.length >= 3 ? 'そのほかの宗教' : rels.join('・'),
+      page: items[0].page,
+      chapter: items[0].chapter,
+      rels,
+    });
+  }
+  result.sort((a, b) => a.page - b.page);
+  return result;
+}
+
+function renderShelf(el) {
+  const books = buildShelfData();
+  const totalSpreads = books.reduce((s, b) => s + b.spreads, 0);
+  const animCls = shelfAnimPlayed ? '' : ' anim';
+  shelfAnimPlayed = true;
+
+  const units = books.map(b => {
+    const dimCls = activeBooks.has(b.key) ? '' : ' dimmed';
+    const tocHtml = b.toc.map(t => {
+      const relsAttr = escH(t.rels.join(' '));
+      const titleAttr = escH(`${t.chapter}（${t.rels.join('・')}）`);
+      return `<button class="toc-chip" data-rel="${relsAttr}" title="${titleAttr}"
+        onclick="openViewerFromPage('${b.key}',${t.page - 1})">${escH(t.label)}</button>`;
+    }).join('');
+    return `<div class="shelf-unit${dimCls}" style="--book-color:${escH(b.color)}">
+      <button class="cover-btn" title="${escH(b.title)}（p1から読む）" onclick="openViewerFromPage('${b.key}',0)">
+        ${b.cover ? `<img class="cover-img" src="${escH(b.cover)}" alt="${escH(b.title)} 表紙" loading="lazy"
+          onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">` : ''}
+        <div class="cover-ph"${b.cover ? '' : ' style="display:flex;"'}>${escH(b.title)}<small>（表紙画像なし環境）</small></div>
+      </button>
+      <div class="book-info">
+        <button class="ttl" onclick="openViewerFromPage('${b.key}',0)">${escH(b.title)}</button>
+        <div class="meta">${b.spreads}見開き</div>
+        <div class="toc-chips">${tocHtml}</div>
+      </div>
+    </div>`;
+  }).join('');
+
+  el.innerHTML = `<div class="bookshelf${animCls}" id="bookshelf">
+    <div class="shelf-head">
+      <div class="t">📚 ${books.length}冊・${totalSpreads}見開きから読み始める</div>
+      <div class="s">表紙をクリックで最初から／章チップをクリックでその章から</div>
+    </div>
+    <div class="shelf-grid">
+      ${units}
+      <div class="shelf-board"></div>
+    </div>
+    <div class="shelf-hint">キーワードを入力すると4冊を横断検索できます（例：「ジハード」「輪廻」「巡礼」「戒律」）</div>
+  </div>`;
+}
+
+function highlightShelfChips(rel) {
+  document.querySelectorAll('.toc-chip').forEach(chip => {
+    const rels = (chip.dataset.rel || '').split(' ');
+    chip.classList.toggle('hl', rels.includes(rel));
+  });
 }
 
 // ============================================================
@@ -510,9 +707,16 @@ function renderViewer() {
   document.getElementById('vBadge').textContent = def.short;
   document.getElementById('vTitle').textContent = `p${p.page}`;
   document.getElementById('vImg').src = p.img;
-  document.getElementById('vPg').textContent = `${vPageIdx + 1} / ${pages.length}`;
   document.getElementById('vPrev').disabled = (vPageIdx === 0);
   document.getElementById('vNext').disabled = (vPageIdx === pages.length - 1);
+
+  // スライダー・番号表示（テーマ読み比べ経由でも通る共通経路のためここで更新）
+  const bookColor = (def.ref() && def.ref().meta.color) || '#534AB7';
+  const slider = document.getElementById('vSlider');
+  slider.max = pages.length - 1;
+  slider.value = vPageIdx;
+  document.querySelector('.v-slider-row').style.setProperty('--vbook-color', bookColor);
+  document.getElementById('vPg').textContent = `${vPageIdx + 1} / ${pages.length}`;
 
   // PDF リンク
   const pdfUrl = (BOOK_PAGES[vBookKey] && BOOK_DEFS.find(d=>d.key===vBookKey))
@@ -544,8 +748,46 @@ function viewerNav(dir) {
   renderViewer();
 }
 
+// スライダー：ドラッグ中(input)は番号表示のみ、離した時(change)に画像ロード
+const vSlider = document.getElementById('vSlider');
+vSlider.addEventListener('input', e => {
+  vPageIdx = +e.target.value;
+  const pages = BOOK_PAGES[vBookKey];
+  document.getElementById('vPg').textContent = `${vPageIdx + 1} / ${pages.length}`;
+});
+vSlider.addEventListener('change', e => {
+  vPageIdx = +e.target.value;
+  renderViewer();
+});
+
+// ページ番号クリック→number入力ジャンプ
+function togglePgInput(show) {
+  const pages = BOOK_PAGES[vBookKey];
+  document.getElementById('vPg').style.display = show ? 'none' : 'inline';
+  const inp = document.getElementById('vPgInput');
+  inp.style.display = show ? 'inline-block' : 'none';
+  if (show) {
+    inp.max = pages.length;
+    inp.value = vPageIdx + 1;
+    inp.focus();
+    inp.select();
+  }
+}
+
+function jumpToInput() {
+  const pages = BOOK_PAGES[vBookKey];
+  const v = Math.min(Math.max(1, +document.getElementById('vPgInput').value || 1), pages.length);
+  vPageIdx = v - 1;
+  renderViewer();
+  togglePgInput(false);
+}
+
 document.addEventListener('keydown', e => {
   if (!document.getElementById('viewer').classList.contains('open')) return;
+  if (e.target.tagName === 'INPUT') {
+    if (e.key === 'Escape' && e.target.type !== 'number') closeViewer(); // スライダー上のEscは閉じる
+    return; // ←→の二重送り・番号入力との競合を防ぐ
+  }
   if (e.key === 'Escape') closeViewer();
   if (e.key === 'ArrowLeft')  viewerNav(-1);
   if (e.key === 'ArrowRight') viewerNav(1);
