@@ -358,6 +358,10 @@ button { font-family: inherit; cursor: pointer; }
   border-bottom: 1px solid var(--border);
 }
 #history-svg-wrap { display: inline-block; min-width: 100%; }
+.timeline-bar { transition: opacity 0.15s; }
+.timeline-bar.tl-dim { opacity: 0.15; }
+.timeline-bar.tl-hit rect:first-of-type { stroke: #FFC400; stroke-width: 2; }
+.timeline-bar.tl-hit text { font-weight: 700; }
 
 /* ===== 比較ビュー ===== */
 #view-compare { overflow: hidden; flex-direction: column; }
@@ -537,7 +541,7 @@ function switchView(name) {
   const idx = ['religion','history','compare'].indexOf(name);
   if (idx >= 0) tabs[idx].classList.add('active');
 
-  if (name === 'history') renderHistory();
+  if (name === 'history') { renderHistory(); applyHistorySearch(); }
   if (name === 'compare') renderCompare();
 }
 
@@ -555,6 +559,7 @@ function onSearch(q) {
   renderSidebar();
   if (activeView && activeView.id === 'view-religion') renderDetail();
   if (activeView && activeView.id === 'view-compare') renderCompare();
+  if (activeView && activeView.id === 'view-history') applyHistorySearch();
 }
 function clearSearch() {
   document.getElementById('search-input').value = '';
@@ -956,7 +961,7 @@ function renderBookGuide(religionName, panel) {
 // ============================================================
 //  歴史ビュー（タイムライン）
 // ============================================================
-const HIST_MIN_YEAR = -600;
+const HIST_MIN_YEAR = -1300;
 const HIST_MAX_YEAR = 2030;
 
 function parseFoundedYear(r) {
@@ -1083,7 +1088,7 @@ function renderHistory() {
     const barH = ROW_H - 8;
     const color = clsColor(r.classification);
     barsHtml += `
-      <g class="timeline-bar" onclick="selectReligionByName('${r.name}')" style="cursor:pointer" title="${r.name}（${r.origin || ''}）">
+      <g class="timeline-bar" data-name="${r.name}" onclick="selectReligionByName('${r.name}')" style="cursor:pointer" title="${r.name}（${r.origin || ''}）">
         <rect x="${x.toFixed(1)}" y="${y_pos}" width="${w.toFixed(1)}" height="${barH}"
           rx="3" fill="${color}" opacity="0.85"/>
         <rect x="${x.toFixed(1)}" y="${y_pos}" width="3" height="${barH}"
@@ -1154,6 +1159,23 @@ function initHistoryZoom() {
 function selectReligionByName(name) {
   const idx = DATA.religions.findIndex(r => r.name === name);
   if (idx >= 0) selectReligion(idx);
+}
+
+function applyHistorySearch() {
+  const wrap = document.getElementById('history-svg-wrap');
+  const bars = wrap.querySelectorAll('.timeline-bar');
+  const q = searchQuery.toLowerCase();
+  let firstHit = null;
+  bars.forEach(bar => {
+    const name = (bar.dataset.name || '').toLowerCase();
+    const hit = !q || name.includes(q);
+    bar.classList.toggle('tl-dim', !!q && !hit);
+    bar.classList.toggle('tl-hit', !!q && hit);
+    if (q && hit && !firstHit) firstHit = bar;
+  });
+  if (firstHit) {
+    firstHit.scrollIntoView({ block: 'center', inline: 'center', behavior: 'smooth' });
+  }
 }
 
 // ============================================================
