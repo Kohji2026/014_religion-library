@@ -475,7 +475,7 @@ button { font-family: inherit; cursor: pointer; }
   </div>
   <div id="search-box">
     <span class="icon-search">🔍</span>
-    <input type="text" id="search-input" data-uiux-search placeholder="宗教名・キーワードで検索..." oninput="onSearch(this.value)">
+    <input type="text" id="search-input" data-uiux-search placeholder="宗教名・キーワードで絞り込み" oninput="onSearch(this.value)">
     <button id="search-clear" onclick="clearSearch()">✕</button>
   </div>
   <button type="button" id="stateResetBtn" class="state-reset-btn" title="タブ・絞り込み・検索・スクロール位置を初期状態に戻す">⟲ 最初から</button>
@@ -720,6 +720,14 @@ function renderSidebar() {
   const list = sortedReligions();
   const current = DATA.religions[currentIdx];
   let html = '';
+  if (list.length === 0) {
+    html = `<div style="padding:40px 16px;text-align:center;color:var(--text-muted);">
+      <div style="font-size:22px;margin-bottom:6px;">🔍</div>
+      <div>条件に一致する宗教はありませんでした</div>
+      <div style="font-size:12px;margin-top:4px;">検索語を短くしてみてください</div>
+      <button type="button" onclick="clearSearch()" style="margin-top:10px;background:var(--accent);color:#fff;border:none;border-radius:6px;padding:6px 14px;cursor:pointer;font-family:inherit;">⟲ 条件をリセット</button>
+    </div>`;
+  }
   list.forEach((r, vi) => {
     const active = (r.id === (current ? current.id : -1)) ? ' active' : '';
     const realIdx = DATA.religions.indexOf(r);
