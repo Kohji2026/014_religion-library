@@ -436,6 +436,9 @@ button { font-family: inherit; cursor: pointer; }
 @media (prefers-reduced-motion: reduce){
   *{transition:none!important;animation:none!important}
 }
+/* ==== モバイル安全網（全企画共通・S8 C2 Tier2最低限＝「破綻しない」ための土台）==== */
+*,*::before,*::after{box-sizing:border-box}
+img,svg{max-width:100%;height:auto}
 
 
 
@@ -1408,32 +1411,42 @@ init();
 </script>
 <!-- UIUX:SHELL v1:START -->
 <style>
-#uiux-hub-btn{position:fixed;z-index:2147483000;display:inline-flex;align-items:center;gap:6px;padding:7px 14px;min-height:32px;min-width:32px;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:rgba(20,20,18,.82);color:#f0ede6;font-family:'UD デジタル 教科書体 NK','Yu Gothic','Meiryo',sans-serif;font-size:13px;font-weight:bold;cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,.35);transition:.18s ease}
-#uiux-hub-btn[data-pos="bottom-right"]{bottom:16px;right:16px}
-#uiux-hub-btn[data-pos="top-right"]{top:10px;right:14px}
-#uiux-hub-btn[data-pos="bottom-left"]{bottom:16px;left:16px}
-#uiux-hub-btn[data-pos="top-left"]{top:10px;left:14px}
-#uiux-hub-btn:hover{background:rgba(20,20,18,.95);transform:translateY(-1px)}
-#uiux-hub-btn:focus-visible{outline:3px solid #d4af37;outline-offset:2px}
-#uiux-hub-btn[data-theme="light"]{background:rgba(255,255,255,.92);color:#1e293b;border-color:rgba(0,0,0,.14);box-shadow:0 2px 10px rgba(15,23,42,.18)}
-#uiux-hub-btn[data-theme="light"]:hover{background:#fff}
+#uiux-hub-group{position:fixed;z-index:2147483000;display:inline-flex;align-items:center;gap:6px}
+#uiux-hub-group[data-pos="bottom-right"]{bottom:16px;right:16px}
+#uiux-hub-group[data-pos="top-right"]{top:10px;right:14px}
+#uiux-hub-group[data-pos="bottom-left"]{bottom:16px;left:16px}
+#uiux-hub-group[data-pos="top-left"]{top:10px;left:14px}
+#uiux-hub-btn,#uiux-hub-search-btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:7px 14px;min-height:32px;min-width:32px;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:rgba(20,20,18,.82);color:#f0ede6;font-family:'UD デジタル 教科書体 NK','Yu Gothic','Meiryo',sans-serif;font-size:13px;font-weight:bold;cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,.35);transition:.18s ease}
+#uiux-hub-search-btn{padding:7px 11px;font-size:15px}
+#uiux-hub-btn:hover,#uiux-hub-search-btn:hover{background:rgba(20,20,18,.95);transform:translateY(-1px)}
+#uiux-hub-btn:focus-visible,#uiux-hub-search-btn:focus-visible{outline:3px solid #d4af37;outline-offset:2px}
+#uiux-hub-btn[data-theme="light"],#uiux-hub-search-btn[data-theme="light"]{background:rgba(255,255,255,.92);color:#1e293b;border-color:rgba(0,0,0,.14);box-shadow:0 2px 10px rgba(15,23,42,.18)}
+#uiux-hub-btn[data-theme="light"]:hover,#uiux-hub-search-btn[data-theme="light"]:hover{background:#fff}
 #uiux-hub-overlay{display:none;position:fixed;inset:0;background:rgba(10,12,16,.55);z-index:2147483001;align-items:flex-start;justify-content:center;padding-top:12vh}
 #uiux-hub-overlay.open{display:flex}
-#uiux-hub-box{width:520px;max-width:92vw;background:#fff;color:#1e293b;border-radius:16px;box-shadow:0 4px 16px rgba(15,23,42,.2);overflow:hidden;border:1px solid #e2e8f0;font-family:'UD デジタル 教科書体 NK','Yu Gothic','Meiryo',sans-serif}
+#uiux-hub-box{width:520px;max-width:92vw;max-height:80vh;background:#fff;color:#1e293b;border-radius:16px;box-shadow:0 4px 16px rgba(15,23,42,.2);overflow:hidden;border:1px solid #e2e8f0;font-family:'UD デジタル 教科書体 NK','Yu Gothic','Meiryo',sans-serif;display:flex;flex-direction:column}
 #uiux-hub-box[data-theme="dark"]{background:#242320;color:#d4d0c8;border-color:#2e2d2a}
-#uiux-hub-input{width:100%;border:none;outline:none;padding:16px 18px;font-size:16px;font-family:inherit;border-bottom:1px solid #e2e8f0;box-sizing:border-box;color:inherit;background:transparent}
+#uiux-hub-input{width:100%;border:none;outline:none;padding:16px 18px;font-size:16px;font-family:inherit;border-bottom:1px solid #e2e8f0;box-sizing:border-box;color:inherit;background:transparent;flex:0 0 auto}
 #uiux-hub-box[data-theme="dark"] #uiux-hub-input{border-bottom-color:#2e2d2a}
-#uiux-hub-list{max-height:320px;overflow-y:auto}
+#uiux-hub-list{overflow-y:auto;flex:1 1 auto}
 .uiux-hub-item{display:flex;align-items:center;gap:10px;padding:10px 18px;cursor:pointer;font-size:14.5px;min-height:32px;box-sizing:border-box}
 .uiux-hub-item .uiux-hub-id{opacity:.6;font-size:12px;width:34px;flex:0 0 auto}
 .uiux-hub-item.sel,.uiux-hub-item:hover{background:rgba(0,0,0,.06)}
 #uiux-hub-box[data-theme="dark"] .uiux-hub-item.sel,#uiux-hub-box[data-theme="dark"] .uiux-hub-item:hover{background:rgba(255,255,255,.1)}
-.uiux-hub-hint{padding:8px 18px;font-size:11.5px;opacity:.7;background:rgba(0,0,0,.04)}
+.uiux-hub-hint{padding:8px 18px;font-size:11.5px;opacity:.7;background:rgba(0,0,0,.04);flex:0 0 auto}
 #uiux-hub-toast{position:fixed;top:56px;right:24px;transform:translateY(-16px);background:#1e293b;color:#fff;padding:12px 22px;border-radius:10px;font-size:13.5px;line-height:1.5;opacity:0;transition:all .28s ease;z-index:2147483002;box-shadow:0 4px 16px rgba(15,23,42,.24);max-width:320px}
 #uiux-hub-toast.show{transform:translateY(0);opacity:1}
-@media (prefers-reduced-motion:reduce){#uiux-hub-btn,#uiux-hub-toast{transition:none!important}}
+@media (prefers-reduced-motion:reduce){#uiux-hub-btn,#uiux-hub-search-btn,#uiux-hub-toast{transition:none!important}}
+@media (max-width:600px){
+  #uiux-hub-btn,#uiux-hub-search-btn{min-height:44px;min-width:44px;padding:10px 16px}
+  #uiux-hub-search-btn{padding:10px 13px}
+  #uiux-hub-toast{top:auto;bottom:16px;left:12px;right:12px;max-width:none}
+}
 </style>
-<button type="button" id="uiux-hub-btn" data-theme="light" data-pos="bottom-right" title="⌂ 工房ダッシュボードへ（Ctrl+Kで企画ジャンプ）">⌂ 工房</button>
+<div id="uiux-hub-group" data-pos="bottom-right">
+  <button type="button" id="uiux-hub-search-btn" data-theme="light" title="企画ジャンプ検索を開く（Ctrl+Kと同じ・スマホはこちらをタップ）">🔍</button>
+  <button type="button" id="uiux-hub-btn" data-theme="light" title="⌂ 工房ダッシュボードへ（Ctrl+Kで企画ジャンプ）">⌂ 工房</button>
+</div>
 <div id="uiux-hub-overlay">
   <div id="uiux-hub-box" data-theme="light">
     <input id="uiux-hub-input" type="text" placeholder="企画名・番号で検索（例：じゃず／037／映画）" autocomplete="off">
@@ -1449,14 +1462,16 @@ var SELF_ID = "p014";
 var PROJECTS = [{"id": "p000", "displayId": "000", "name": "全企画管理", "yomi": "ぜんきかくかんり", "emoji": "🗂️", "path": "実験工房/000_全企画管理/dashboard.html", "depth": 2, "launchProtocol": null}, {"id": "p001", "displayId": "001", "name": "紡星図", "yomi": "つむぎぼしず", "emoji": "🌌", "path": "実験工房/001_紡星図/紡星図.html", "depth": 2, "launchProtocol": null}, {"id": "p002", "displayId": "002", "name": "ミュージックボックス", "yomi": "みゅーじっくぼっくす", "emoji": "🎵", "path": "実験工房/002_ミュージックボックス/ミュージックボックス.html", "depth": 2, "launchProtocol": null}, {"id": "p003", "displayId": "003", "name": "ホームビデオ検索", "yomi": "ほーむびでおけんさく", "emoji": "📼", "path": "実験工房/003_ホームビデオ検索/ホームビデオ検索.html", "depth": 2, "launchProtocol": null}, {"id": "p004", "displayId": "004", "name": "環境音動画検索", "yomi": "かんきょうおんどうが", "emoji": "🌿", "path": "実験工房/004_環境音動画検索/viewer.html", "depth": 2, "launchProtocol": null}, {"id": "p005", "displayId": "005", "name": "世界白地図", "yomi": "せかいはくちず", "emoji": "🗺️", "path": "実験工房/005_世界白地図/index.html", "depth": 2, "launchProtocol": null}, {"id": "p006", "displayId": "006", "name": "社内報アーカイブ", "yomi": "しゃないほうはすかっぷ", "emoji": "🫐", "path": "実験工房/006_社内報/index.html", "depth": 2, "launchProtocol": null}, {"id": "p007", "displayId": "007", "name": "映画ライブラリ", "yomi": "えいがらいぶらり", "emoji": "🎬", "path": "実験工房/007_映画ライブラリ/映画ライブラリ.html", "depth": 2, "launchProtocol": null}, {"id": "p008", "displayId": "008", "name": "書籍ライブラリ", "yomi": "しょせきらいぶらり", "emoji": "📚", "path": "実験工房/008_書籍ライブラリ/書籍ライブラリ.html", "depth": 2, "launchProtocol": null}, {"id": "p009", "displayId": "009", "name": "歴史検索", "yomi": "れきしけんさく", "emoji": "📜", "path": "実験工房/009_歴史検索/index.html", "depth": 2, "launchProtocol": null}, {"id": "p010", "displayId": "010", "name": "TVヒストリー", "yomi": "てぃーびーひすとりー", "emoji": "📺", "path": "実験工房/010_TVヒストリー/index.html", "depth": 2, "launchProtocol": null}, {"id": "p011", "displayId": "011", "name": "クラシック総合", "yomi": "くらしっく", "emoji": "🎼", "path": "実験工房/011_クラシック/クラシックライブラリ.html", "depth": 2, "launchProtocol": null}, {"id": "p012", "displayId": "012", "name": "絵画ライブラリ", "yomi": "かいがらいぶらり", "emoji": "🎨", "path": "実験工房/012_絵画/絵画ライブラリ.html", "depth": 2, "launchProtocol": null}, {"id": "p013", "displayId": "013", "name": "哲学総合", "yomi": "てつがく", "emoji": "🦉", "path": "実験工房/013_哲学/哲学ライブラリ.html", "depth": 2, "launchProtocol": null}, {"id": "p014", "displayId": "014", "name": "宗教総合", "yomi": "しゅうきょう", "emoji": "🕊️", "path": "実験工房/014_宗教/宗教ライブラリ.html", "depth": 2, "launchProtocol": null}, {"id": "p015", "displayId": "015", "name": "野球ライブラリ", "yomi": "やきゅうらいぶらり", "emoji": "⚾", "path": "実験工房/015_野球ライブラリ/野球ライブラリ.html", "depth": 2, "launchProtocol": null}, {"id": "p016", "displayId": "016", "name": "写真ライブラリ", "yomi": "しゃしんらいぶらり", "emoji": "📷", "path": "実験工房/016_写真/写真ライブラリ_モック.html", "depth": 2, "launchProtocol": null}, {"id": "p017", "displayId": "017", "name": "世界の動き", "yomi": "せかいのうごき", "emoji": "🌍", "path": "実験工房/017_世界の動き/世界の動き.html", "depth": 2, "launchProtocol": null}, {"id": "p018", "displayId": "018", "name": "世界ライブカメラ", "yomi": "らいぶかめら", "emoji": "📹", "path": "実験工房/018_ライブカメラ/index.html", "depth": 2, "launchProtocol": null}, {"id": "p019", "displayId": "019", "name": "新聞ダッシュボード", "yomi": "しんぶん", "emoji": "📰", "path": "実験工房/019_新聞フォルダ/newspaper_dashboard.html", "depth": 2, "launchProtocol": null}, {"id": "p020", "displayId": "020", "name": "移動シミュレーション", "yomi": "いどうしみゅれーしょん", "emoji": "🚄", "path": "実験工房/020_移動シミュレーション/index.html", "depth": 2, "launchProtocol": null}, {"id": "p021", "displayId": "021", "name": "夜空ビューア", "yomi": "よぞらびゅーあ", "emoji": "🌙", "path": "実験工房/021_夜空/index.html", "depth": 2, "launchProtocol": null}, {"id": "p022", "displayId": "022", "name": "国境推移", "yomi": "こっきょうすいい", "emoji": "🌐", "path": "実験工房/022_国境推移/index.html", "depth": 2, "launchProtocol": null}, {"id": "p023", "displayId": "023", "name": "健康データベース", "yomi": "けんこう", "emoji": "🩺", "path": "実験工房/023_健康/kenshin_dashboard.html", "depth": 2, "launchProtocol": null}, {"id": "p024", "displayId": "024", "name": "資産ダッシュボード", "yomi": "しさん", "emoji": "💰", "path": "実験工房/024_資産/dashboard.html", "depth": 2, "launchProtocol": null}, {"id": "p025", "displayId": "025", "name": "動画検索", "yomi": "どうがけんさく", "emoji": "🎞️", "path": "実験工房/025_動画検索/index.html", "depth": 2, "launchProtocol": null}, {"id": "p026", "displayId": "026", "name": "教養書ライブラリ", "yomi": "きょうようしょ", "emoji": "🎓", "path": "実験工房/026_教養書/index.html", "depth": 2, "launchProtocol": null}, {"id": "p027", "displayId": "027", "name": "運動管理", "yomi": "うんどうかんり", "emoji": "🏃", "path": "実験工房/027_運動/index.html", "depth": 2, "launchProtocol": null}, {"id": "p028", "displayId": "028", "name": "日記ダッシュボード", "yomi": "にっき", "emoji": "📔", "path": "実験工房/028_日記/diary.html", "depth": 2, "launchProtocol": null}, {"id": "p029", "displayId": "029", "name": "支出ダッシュボード", "yomi": "ししゅつ", "emoji": "💳", "path": "実験工房/029_支出/index.html", "depth": 2, "launchProtocol": null}, {"id": "p030", "displayId": "030", "name": "ラジオアーカイブ", "yomi": "らじお", "emoji": "📻", "path": "実験工房/030_ラジオ/index.html", "depth": 2, "launchProtocol": null}, {"id": "p031", "displayId": "031", "name": "散歩ライブラリ", "yomi": "さんぽ", "emoji": "🚶", "path": "実験工房/031_散歩/index.html", "depth": 2, "launchProtocol": null}, {"id": "p032", "displayId": "032", "name": "ドライブ音楽", "yomi": "どらいぶおんがく", "emoji": "🚗", "path": "実験工房/032_ドライブ音楽/index.html", "depth": 2, "launchProtocol": null}, {"id": "p033", "displayId": "033", "name": "音源分離", "yomi": "おんげんぶんり", "emoji": "🎛️", "path": null, "depth": 2, "launchProtocol": "http://localhost:5000"}, {"id": "p034", "displayId": "034", "name": "気分推奨", "yomi": "きぶんすいしょう", "emoji": "🍀", "path": "実験工房/034_気分推奨/index.html", "depth": 2, "launchProtocol": null}, {"id": "p035", "displayId": "035", "name": "元素生活", "yomi": "げんそせいかつ", "emoji": "🧪", "path": "実験工房/035_元素生活/index.html", "depth": 2, "launchProtocol": null}, {"id": "p036", "displayId": "036", "name": "偉人ストック", "yomi": "いじんすとっく", "emoji": "🏛️", "path": "実験工房/036_偉人/index.html", "depth": 2, "launchProtocol": null}, {"id": "p037", "displayId": "037", "name": "ジャズラジオ", "yomi": "じゃずらじお", "emoji": "🎷", "path": "実験工房/037_ジャズ/ジャズラジオ.html", "depth": 2, "launchProtocol": "http://localhost:8037/ジャズラジオ.html"}, {"id": "tsumuri", "displayId": "紡", "name": "紡理道ダッシュボード", "yomi": "つむりどう", "emoji": "🌀", "path": "紡理道プロジェクト/index.html", "depth": 1, "launchProtocol": null}, {"id": "tsumugi-ito", "displayId": "糸", "name": "紡ぎ糸推移", "yomi": "つむぎいとすいい", "emoji": "🧵", "path": "紡理道プロジェクト/紡ぎ糸推移/index.html", "depth": 2, "launchProtocol": null}, {"id": "inspection", "displayId": "点", "name": "全企画定期点検", "yomi": "ていきてんけん", "emoji": "📋", "path": "全企画定期点検/report.html", "depth": 1, "launchProtocol": null}, {"id": "insights", "displayId": "知", "name": "知見ライブラリ", "yomi": "ちけんらいぶらり", "emoji": "💡", "path": "全企画定期点検/insights.html", "depth": 1, "launchProtocol": null}];
 var HUB_ACTIVE = (location.protocol === "file:") || (location.hostname === "localhost") || (location.hostname === "127.0.0.1");
 
+var group = document.getElementById("uiux-hub-group");
 var btn = document.getElementById("uiux-hub-btn");
+var searchBtn = document.getElementById("uiux-hub-search-btn");
 var overlay = document.getElementById("uiux-hub-overlay");
 var input = document.getElementById("uiux-hub-input");
 var list = document.getElementById("uiux-hub-list");
 var toastEl = document.getElementById("uiux-hub-toast");
 
 if (!HUB_ACTIVE) {
-  if (btn) btn.style.display = "none";
+  if (group) group.style.display = "none";
   if (overlay) overlay.parentNode.removeChild(overlay);
 } else {
   var self = null;
@@ -1532,6 +1547,7 @@ if (!HUB_ACTIVE) {
     for (var i = 0; i < PROJECTS.length; i++) { if (PROJECTS[i].id === "p000") { home = PROJECTS[i]; break; } }
     if (home && home.id !== SELF_ID) { go(home); } else { open(); } /* 000自身では代わりにジャンプパレットを開く */
   });
+  searchBtn.addEventListener("click", function () { open(); }); /* スマホにはCtrl+Kが無いため常設の🔍ボタンで開く（S8） */
 
   document.addEventListener("keydown", function (e) {
     if (e.isComposing || e.keyCode === 229) return; /* IME変換中は一切反応しない（全企画共通鉄則） */
