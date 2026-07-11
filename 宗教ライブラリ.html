@@ -439,6 +439,8 @@ button { font-family: inherit; cursor: pointer; }
 /* ==== モバイル安全網（全企画共通・S8 C2 Tier2最低限＝「破綻しない」ための土台）==== */
 *,*::before,*::after{box-sizing:border-box}
 img,svg{max-width:100%;height:auto}
+/* 歴史SVGは横スクロール／ドラッグ移動が前提のため、上記max-width制約から除外 */
+#history-svg-wrap svg,#history-ruler-svg{max-width:none;height:auto}
 
 
 
