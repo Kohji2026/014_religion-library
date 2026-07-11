@@ -1457,5 +1457,130 @@ if (!HUB_ACTIVE) {
 })();
 </script>
 <!-- UIUX:SHELL v1:END -->
+<!-- UIUX:BEHAVIOR v1:START -->
+<style>
+#uiux-toast{position:fixed;top:64px;right:24px;transform:translateY(-16px);display:flex;align-items:center;gap:10px;background:#1e293b;color:#fff;padding:12px 20px;border-radius:var(--radius-m,10px);border-left:5px solid var(--accent,#c9a84c);font-family:'UD デジタル 教科書体 NK','Yu Gothic','Meiryo',sans-serif;font-size:var(--fs-m,.875rem);line-height:1.5;opacity:0;transition:var(--transition,.18s ease);z-index:2147482990;box-shadow:var(--shadow-2,0 6px 20px rgba(0,0,0,.45));max-width:340px}
+#uiux-toast.show{transform:translateY(0);opacity:1}
+#uiux-toast:empty{display:none}
+.uiux-toast-close{background:none;border:none;color:#fff;opacity:.75;cursor:pointer;font-size:16px;line-height:1;padding:0;min-width:var(--hit-min,32px);min-height:var(--hit-min,32px);flex:0 0 auto}
+.uiux-toast-close:hover{opacity:1}
+#uiux-help-overlay{display:none;position:fixed;inset:0;background:rgba(10,12,16,.55);z-index:2147482980;align-items:center;justify-content:center;padding:16px}
+#uiux-help-overlay.open{display:flex}
+#uiux-help-box{width:460px;max-width:100%;max-height:84vh;overflow-y:auto;background:var(--card,#242320);color:var(--text,#d4d0c8);border:1px solid var(--border,#2e2d2a);border-radius:var(--radius-l,16px);box-shadow:var(--shadow-2,0 6px 20px rgba(0,0,0,.45));padding:20px 22px;font-family:'UD デジタル 教科書体 NK','Yu Gothic','Meiryo',sans-serif}
+#uiux-help-title{font-size:var(--fs-xl,1.125rem);font-weight:bold;margin:0 0 12px}
+#uiux-help-box table{width:100%;border-collapse:collapse;font-size:var(--fs-m,.875rem)}
+#uiux-help-box td{padding:7px 4px;border-bottom:1px solid var(--border,#2e2d2a);vertical-align:top}
+#uiux-help-box td:first-child{width:110px;white-space:nowrap}
+#uiux-help-box kbd{display:inline-block;background:var(--surface,#1e1d1b);border:1px solid var(--border,#2e2d2a);border-radius:6px;padding:2px 7px;font-family:inherit;font-size:var(--fs-s,.78125rem);margin-right:2px}
+#uiux-help-note{font-size:var(--fs-s,.78125rem);color:var(--text-muted,#928c83);margin-top:12px;line-height:1.6}
+#uiux-help-close{margin-top:16px;min-height:var(--hit-min,32px);padding:6px 18px;border-radius:999px;border:1px solid var(--border,#2e2d2a);background:var(--surface,#1e1d1b);color:var(--text,#d4d0c8);font-family:inherit;font-size:var(--fs-s,.78125rem);cursor:pointer}
+#uiux-help-close:hover{background:var(--card-hover,#2c2b28)}
+#uiux-help-close:focus-visible,.uiux-toast-close:focus-visible{outline:3px solid var(--accent,#d4af37);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){#uiux-toast{transition:none!important}}
+</style>
+<div id="uiux-toast" role="status" aria-live="polite"></div>
+<div id="uiux-help-overlay" role="dialog" aria-modal="true" aria-label="キーボード操作ヘルプ">
+  <div id="uiux-help-box">
+    <div id="uiux-help-title">⌨️ キーボード操作</div>
+    <table>
+      <tr><td><kbd>Ctrl</kbd>+<kbd>K</kbd></td><td>企画ジャンプパレット</td></tr>
+      <tr><td><kbd>/</kbd></td><td>検索欄へフォーカス</td></tr>
+      <tr><td><kbd>Esc</kbd></td><td>開いているパネルを閉じる</td></tr>
+      <tr><td><kbd>←</kbd> <kbd>→</kbd></td><td>ライトボックスの前後送り（対応画面のみ）</td></tr>
+      <tr><td><kbd>?</kbd></td><td>このヘルプを開閉</td></tr>
+    </table>
+    <div id="uiux-help-note">このほか、この画面だけの独自操作がある場合はそのまま使えます。</div>
+    <button type="button" id="uiux-help-close">閉じる</button>
+  </div>
+</div>
+<script>
+(function(){
+"use strict";
+var toastEl = document.getElementById("uiux-toast");
+var helpOverlay = document.getElementById("uiux-help-overlay");
+var helpClose = document.getElementById("uiux-help-close");
+var helpLastFocus = null;
+
+function toast(msg, opts) {
+  opts = opts || {};
+  if (!toastEl) return;
+  toastEl.innerHTML = "";
+  var span = document.createElement("span");
+  span.textContent = msg;
+  toastEl.appendChild(span);
+  if (opts.sticky) {
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "uiux-toast-close";
+    btn.setAttribute("aria-label", "閉じる");
+    btn.textContent = "×";
+    btn.addEventListener("click", hideToast);
+    toastEl.appendChild(btn);
+  }
+  toastEl.classList.add("show");
+  clearTimeout(toastEl._tm);
+  if (!opts.sticky) {
+    toastEl._tm = setTimeout(hideToast, 4000);
+  }
+}
+function hideToast() {
+  if (toastEl) toastEl.classList.remove("show");
+}
+window.UIUXToast = toast;
+
+function isEditableTarget(el) {
+  if (!el || !el.tagName) return false;
+  var tag = el.tagName.toLowerCase();
+  if (tag === "input" || tag === "textarea" || tag === "select") return true;
+  return !!el.isContentEditable;
+}
+
+function findSearchInput() {
+  var sels = ["[data-uiux-search]", "#searchInput", "#search", ".search-input", ".search-box input[type=text]", ".search-box input[type=search]", "input[type=search]"];
+  for (var i = 0; i < sels.length; i++) {
+    var el = document.querySelector(sels[i]);
+    if (el) return el;
+  }
+  return null;
+}
+
+function openHelp() {
+  helpLastFocus = document.activeElement;
+  helpOverlay.classList.add("open");
+  helpClose.focus();
+}
+function closeHelp() {
+  helpOverlay.classList.remove("open");
+  if (helpLastFocus && helpLastFocus.focus) helpLastFocus.focus();
+}
+
+helpClose.addEventListener("click", closeHelp);
+helpOverlay.addEventListener("click", function (e) { if (e.target === helpOverlay) closeHelp(); });
+
+document.addEventListener("keydown", function (e) {
+  if (e.isComposing || e.keyCode === 229) return; /* IME変換中は一切反応しない（全企画共通鉄則） */
+  if (e.defaultPrevented) return; /* 処理済みイベントには触らない＝既存機能優先 */
+
+  if (e.key === "Escape") {
+    if (helpOverlay.classList.contains("open")) { e.preventDefault(); closeHelp(); }
+    return; /* Escは「閉じる」専任。それ以外の用途（検索クリア等）には使わない */
+  }
+  if (isEditableTarget(e.target)) return; /* 入力欄フォーカス中は「/」「?」を発動しない */
+  if (e.ctrlKey || e.metaKey || e.altKey) return;
+
+  if (e.key === "/") {
+    var input = findSearchInput();
+    if (input) { e.preventDefault(); input.focus(); if (input.select) input.select(); }
+    return;
+  }
+  if (e.key === "?") {
+    e.preventDefault();
+    if (helpOverlay.classList.contains("open")) closeHelp(); else openHelp();
+    return;
+  }
+});
+})();
+</script>
+<!-- UIUX:BEHAVIOR v1:END -->
 </body>
 </html>
