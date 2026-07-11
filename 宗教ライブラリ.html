@@ -74,6 +74,15 @@ button { font-family: inherit; cursor: pointer; }
   font-size: 13px; color: var(--text2);
   transition: background .15s, color .15s;
 }
+.state-reset-btn {
+  display: inline-flex; align-items: center; gap: 4px;
+  margin-left: 10px; padding: 5px 12px; min-height: var(--hit-min,32px);
+  border: 1px solid var(--border); border-radius: 999px;
+  background: var(--surface,#f1f5f9); color: var(--text-muted,#64748b);
+  font-family: inherit; font-size: 12.5px; cursor: pointer; white-space: nowrap;
+}
+.state-reset-btn:hover { background: var(--bg3); color: var(--text); }
+.state-reset-btn:focus-visible { outline: 3px solid var(--accent,#d4af37); outline-offset: 2px; }
 .tab-btn.active {
   background: var(--bg3); color: var(--text);
   font-weight: 500;
@@ -469,6 +478,7 @@ button { font-family: inherit; cursor: pointer; }
     <input type="text" id="search-input" data-uiux-search placeholder="宗教名・キーワードで検索..." oninput="onSearch(this.value)">
     <button id="search-clear" onclick="clearSearch()">✕</button>
   </div>
+  <button type="button" id="stateResetBtn" class="state-reset-btn" title="タブ・絞り込み・検索・スクロール位置を初期状態に戻す">⟲ 最初から</button>
 </div>
 
 <!-- ステータスバー -->
@@ -1308,6 +1318,85 @@ function renderCompare() {
 //  起動
 // ============================================================
 init();
+
+// ============================================================
+//  状態保持（P3・S6：タブ／絞り込み／検索語／スクロール位置）
+// ============================================================
+(function() {
+  "use strict";
+  var KEY = "p014:state";
+
+  function loadState() {
+    try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { return {}; }
+  }
+  function saveState(patch) {
+    var s = loadState();
+    Object.assign(s, patch);
+    try { localStorage.setItem(KEY, JSON.stringify(s)); } catch (e) {}
+  }
+
+  function scrollTarget() {
+    var view = document.querySelector('.view.active');
+    if (!view) return null;
+    if (view.id === 'view-religion') return document.getElementById('detail-panel');
+    if (view.id === 'view-history') return document.getElementById('history-scroll');
+    if (view.id === 'view-compare') return document.getElementById('compare-table-wrap');
+    return null;
+  }
+  function saveScroll() {
+    var el = scrollTarget();
+    if (el) saveState({ scroll: el.scrollTop });
+  }
+  var scrollTimer = null;
+  document.addEventListener('scroll', function(e) {
+    if (!e.target || !e.target.id) return;
+    if (['detail-panel', 'history-scroll', 'compare-table-wrap'].indexOf(e.target.id) === -1) return;
+    clearTimeout(scrollTimer);
+    scrollTimer = setTimeout(saveScroll, 300);
+  }, true);
+
+  var origSwitchView = switchView;
+  switchView = function(name) {
+    origSwitchView(name);
+    saveState({ tab: name });
+  };
+  var origSetCompFilter = setCompFilter;
+  setCompFilter = function(cls) {
+    origSetCompFilter(cls);
+    saveState({ compFilter: cls });
+  };
+
+  document.getElementById('search-input').addEventListener('input', function() {
+    saveState({ search: this.value });
+  });
+
+  document.getElementById('stateResetBtn').addEventListener('click', function() {
+    try { localStorage.removeItem(KEY); } catch (e) {}
+    location.reload();
+  });
+
+  function restore() {
+    var s = loadState();
+    if (!s || !Object.keys(s).length) return;
+    if (s.search) {
+      var si = document.getElementById('search-input');
+      if (si) { si.value = s.search; onSearch(s.search); }
+    }
+    if (s.tab && s.tab !== 'religion') {
+      switchView(s.tab);
+    }
+    if (s.tab === 'compare' && s.compFilter) {
+      setCompFilter(s.compFilter);
+    }
+    if (typeof s.scroll === 'number') {
+      requestAnimationFrame(function() {
+        var el = scrollTarget();
+        if (el) el.scrollTop = s.scroll;
+      });
+    }
+  }
+  restore();
+})();
 </script>
 <!-- UIUX:SHELL v1:START -->
 <style>
