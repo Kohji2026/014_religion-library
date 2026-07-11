@@ -20,14 +20,10 @@
   --cls-日本の新宗教-bg: #EEEDFE;
   --cls-その他-bg:    #F1EFE8;
   --cls-無神論的宗教-bg: #F5EDDE;
-  --bg:     #FAFAF9;
   --bg2:    #F1EFE8;
   --bg3:    #FFFFFF;
-  --border: #E0DEDB;
-  --text:   #1A1918;
   --text2:  #6B6965;
   --text3:  #9B9793;
-  --accent: #534AB7;
   --accent-bg: #EEEDFE;
   --radius: 8px;
   --shadow: 0 1px 3px rgba(0,0,0,0.08);
@@ -59,11 +55,12 @@ button { font-family: inherit; cursor: pointer; }
   padding: 10px 16px;
   background: var(--bg3);
   border-bottom: 1px solid var(--border);
+  border-top: 6px solid var(--accent);
   flex-shrink: 0;
   flex-wrap: wrap;
 }
-#logo { font-size: 16px; font-weight: 600; white-space: nowrap; }
-#logo span { color: var(--accent); }
+#logo { font-size: 16px; font-weight: 600; white-space: nowrap; color: var(--accent-text); }
+#logo span { color: var(--accent-text); }
 
 .tab-bar {
   display: flex; gap: 2px;
@@ -161,10 +158,10 @@ button { font-family: inherit; cursor: pointer; }
 }
 .religion-item:hover { background: var(--bg2); }
 .religion-item.active { background: var(--accent-bg); color: var(--accent); }
-.rel-num { font-size: 10px; color: var(--text3); width: 22px; flex-shrink: 0; }
+.rel-num { font-size: 11px; color: var(--text3); width: 22px; flex-shrink: 0; }
 .rel-name { flex: 1; }
 .cls-badge {
-  font-size: 9px; padding: 1px 5px; border-radius: 3px;
+  font-size: 11px; padding: 1px 5px; border-radius: 3px;
   flex-shrink: 0; white-space: nowrap; font-weight: 500;
 }
 .cls-一神教         { background: var(--cls-一神教-bg);    color: var(--cls-一神教); }
@@ -304,7 +301,7 @@ button { font-family: inherit; cursor: pointer; }
 }
 .tsumuridou-badge {
   display: inline-flex; align-items: center; gap: 5px;
-  font-size: 10px; font-weight: 600; letter-spacing: .06em;
+  font-size: 11px; font-weight: 600; letter-spacing: .06em;
   color: #8A6A20;
   background: #F2E6C2;
   border: 1px solid #C9A84C60;
@@ -312,7 +309,7 @@ button { font-family: inherit; cursor: pointer; }
   padding: 3px 10px;
 }
 .tsumuridou-vol {
-  font-size: 10px; color: #A08040; margin-left: auto;
+  font-size: 11px; color: #A08040; margin-left: auto;
 }
 .tsumuridou-body {
   border-left: 3px solid #C9A84C;
@@ -407,6 +404,52 @@ button { font-family: inherit; cursor: pointer; }
 <!-- UIUX:HEAD v1:START -->
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🕊️</text></svg>">
 <!-- UIUX:HEAD v1:END -->
+<!-- UIUX:TOKENS v1:START -->
+<style>
+:root{
+  /* ==== 質感トークン（全企画共通・テーマ非依存） ==== */
+  --radius-s:6px;
+  --radius-m:10px;
+  --radius-l:16px;
+  --transition:.18s ease;
+  --hit-min:32px;
+  /* ==== タイポスケール6段階（rem・基準16px換算。11px未満は使用禁止） ==== */
+  --fs-xxl:1.5rem;      /* 24px 画面タイトル */
+  --fs-xl:1.125rem;     /* 18px セクション見出し */
+  --fs-l:1rem;          /* 16px カードタイトル */
+  --fs-m:.875rem;       /* 14px 本文（基準） */
+  --fs-s:.78125rem;     /* 12.5px 補助情報 */
+  --fs-xs:.6875rem;     /* 11px 最小（下限） */
+  /* ==== 企画色トークン2層（図形用3:1／文字用4.5:1保証。check_contrast.pyで機械検証） ==== */
+  --accent:#4a5899;
+  --accent-text:#4a5899;
+}
+@media (prefers-reduced-motion: reduce){
+  *{transition:none!important;animation:none!important}
+}
+
+
+
+
+:root{
+  --bg:#f8fafc;
+  --surface:#f1f5f9;
+  --card:#ffffff;
+  --card-hover:#e8eef5;
+  --border:#e2e8f0;
+  --text:#1e293b;
+  --text-muted:#64748b;
+  --tag-bg:#eef2f6;
+  --shadow-1:0 1px 3px rgba(15,23,42,.08);
+  --shadow-2:0 4px 16px rgba(15,23,42,.12);
+}
+::-webkit-scrollbar{width:12px;height:12px}
+::-webkit-scrollbar-track{background:var(--surface)}
+::-webkit-scrollbar-thumb{background:#94a3b8;border-radius:7px;border:2px solid var(--surface)}
+::-webkit-scrollbar-thumb:hover{background:#7c8ba1}
+
+</style>
+<!-- UIUX:TOKENS v1:END -->
 </head>
 <body>
 <div id="app">
