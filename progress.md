@@ -129,6 +129,12 @@
 - [x] 9〜10px未満だった補助フォント4箇所（宗教番号・分類バッジ・紡理道バッジ・巻数表示）を11pxに引き上げ
 - [x] check_uiux.py OK・GitHub push済み
 
+## バグ修正（2026-08-08）
+- [x] インフォグラフィックホバープレビューが一部欠ける不具合を修正
+  - 原因: `.img-hover-preview`が`position:absolute`で`#detail-panel`(overflow-y:auto)基準に配置され、画面端・スクロール枠をはみ出す位置で切り取られていた
+  - 修正: `position:fixed`に変更し、hover時にJSで実サイズ・画面サイズを計測して上下左右に自動調整（上に入らなければ下に表示、右にはみ出せば左にずらす）
+- [x] GitHub push済み
+
 ## メモ
 - Excelソース: `C:\Users\kohji\OneDrive\01_記録\22_宗教一覧.xlsx`
 - インフォグラフィック: `C:\Users\kohji\OneDrive\01_記録\頻度少\宗教\`

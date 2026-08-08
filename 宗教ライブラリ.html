@@ -184,9 +184,7 @@ button { font-family: inherit; cursor: pointer; }
 .infographic-wrap { position: relative; display: inline-block; }
 .img-hover-preview {
   display: none;
-  position: absolute;
-  bottom: calc(100% + 8px);
-  left: 0;
+  position: fixed;
   z-index: 200;
   background: #fff;
   border: 1px solid var(--border);
@@ -194,10 +192,12 @@ button { font-family: inherit; cursor: pointer; }
   box-shadow: 0 4px 20px rgba(0,0,0,0.25);
   padding: 6px;
   width: 340px;
+  max-height: 85vh;
+  overflow: hidden;
   pointer-events: none;
 }
-.img-hover-preview img { width: 100%; height: auto; display: block; border-radius: 4px; }
-.infographic-wrap:hover .img-hover-preview { display: block; }
+.img-hover-preview img { width: 100%; height: auto; max-height: calc(85vh - 12px); object-fit: contain; display: block; border-radius: 4px; }
+.img-hover-preview.show { display: block; }
 
 /* 詳細パネル */
 #detail-panel {
@@ -1326,6 +1326,43 @@ function renderCompare() {
 
 
 // ============================================================
+//  インフォグラフィックホバープレビューの位置調整
+//  （画面端・スクロール枠での欠け防止。position:fixedで祖先のoverflowクリップを回避）
+// ============================================================
+document.addEventListener('mouseover', (e) => {
+  const wrap = e.target.closest('.infographic-wrap');
+  if (!wrap) return;
+  const preview = wrap.querySelector('.img-hover-preview');
+  if (!preview) return;
+  const margin = 8;
+  const rect = wrap.getBoundingClientRect();
+
+  preview.classList.add('show');
+  const previewHeight = preview.offsetHeight;
+  const previewWidth = preview.offsetWidth;
+
+  let left = rect.left;
+  if (left + previewWidth > window.innerWidth - margin) left = window.innerWidth - previewWidth - margin;
+  if (left < margin) left = margin;
+
+  let top = rect.top - previewHeight - margin;
+  if (top < margin) {
+    top = rect.bottom + margin;
+    if (top + previewHeight > window.innerHeight - margin) top = window.innerHeight - previewHeight - margin;
+  }
+  if (top < margin) top = margin;
+
+  preview.style.left = left + 'px';
+  preview.style.top = top + 'px';
+});
+document.addEventListener('mouseout', (e) => {
+  const wrap = e.target.closest('.infographic-wrap');
+  if (!wrap || wrap.contains(e.relatedTarget)) return;
+  const preview = wrap.querySelector('.img-hover-preview');
+  if (preview) preview.classList.remove('show');
+});
+
+// ============================================================
 //  起動
 // ============================================================
 init();
@@ -1426,8 +1463,15 @@ init();
 #uiux-hub-overlay.open{display:flex}
 #uiux-hub-box{width:520px;max-width:92vw;max-height:80vh;background:#fff;color:#1e293b;border-radius:16px;box-shadow:0 4px 16px rgba(15,23,42,.2);overflow:hidden;border:1px solid #e2e8f0;font-family:'UD デジタル 教科書体 NK','Yu Gothic','Meiryo',sans-serif;display:flex;flex-direction:column}
 #uiux-hub-box[data-theme="dark"]{background:#242320;color:#d4d0c8;border-color:#2e2d2a}
-#uiux-hub-input{width:100%;border:none;outline:none;padding:16px 18px;font-size:16px;font-family:inherit;border-bottom:1px solid #e2e8f0;box-sizing:border-box;color:inherit;background:transparent;flex:0 0 auto}
-#uiux-hub-box[data-theme="dark"] #uiux-hub-input{border-bottom-color:#2e2d2a}
+#uiux-hub-input-row{display:flex;align-items:center;border-bottom:1px solid #e2e8f0;flex:0 0 auto}
+#uiux-hub-box[data-theme="dark"] #uiux-hub-input-row{border-bottom-color:#2e2d2a}
+#uiux-hub-input{width:100%;border:none;outline:none;padding:16px 18px;font-size:16px;font-family:inherit;box-sizing:border-box;color:inherit;background:transparent;flex:1 1 auto;min-width:0}
+#uiux-hub-close-btn{flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;min-width:32px;min-height:32px;margin-right:10px;border:none;border-radius:999px;background:rgba(0,0,0,.06);color:inherit;font-size:18px;line-height:1;cursor:pointer;transition:.18s ease}
+#uiux-hub-close-btn:hover{background:rgba(0,0,0,.12)}
+#uiux-hub-close-btn:focus-visible{outline:3px solid #d4af37;outline-offset:2px}
+#uiux-hub-box[data-theme="dark"] #uiux-hub-close-btn{background:rgba(255,255,255,.1)}
+#uiux-hub-box[data-theme="dark"] #uiux-hub-close-btn:hover{background:rgba(255,255,255,.18)}
+@media (max-width:600px){#uiux-hub-close-btn{width:44px;height:44px;min-width:44px;min-height:44px}}
 #uiux-hub-list{overflow-y:auto;flex:1 1 auto}
 .uiux-hub-item{display:flex;align-items:center;gap:10px;padding:10px 18px;cursor:pointer;font-size:14.5px;min-height:32px;box-sizing:border-box}
 .uiux-hub-item .uiux-hub-id{opacity:.6;font-size:12px;width:34px;flex:0 0 auto}
@@ -1449,7 +1493,10 @@ init();
 </div>
 <div id="uiux-hub-overlay">
   <div id="uiux-hub-box" data-theme="light">
-    <input id="uiux-hub-input" type="text" placeholder="企画名・番号で検索（例：じゃず／037／映画）" autocomplete="off">
+    <div id="uiux-hub-input-row">
+      <input id="uiux-hub-input" type="text" placeholder="企画名・番号で検索（例：じゃず／037／映画）" autocomplete="off">
+      <button type="button" id="uiux-hub-close-btn" title="閉じる">×</button>
+    </div>
     <div id="uiux-hub-list"></div>
     <div class="uiux-hub-hint">↑↓ 移動／Enter 移動／Esc 閉じる</div>
   </div>
@@ -1467,6 +1514,7 @@ var btn = document.getElementById("uiux-hub-btn");
 var searchBtn = document.getElementById("uiux-hub-search-btn");
 var overlay = document.getElementById("uiux-hub-overlay");
 var input = document.getElementById("uiux-hub-input");
+var closeBtn = document.getElementById("uiux-hub-close-btn");
 var list = document.getElementById("uiux-hub-list");
 var toastEl = document.getElementById("uiux-hub-toast");
 
@@ -1548,6 +1596,7 @@ if (!HUB_ACTIVE) {
     if (home && home.id !== SELF_ID) { go(home); } else { open(); } /* 000自身では代わりにジャンプパレットを開く */
   });
   searchBtn.addEventListener("click", function () { open(); }); /* スマホにはCtrl+Kが無いため常設の🔍ボタンで開く（S8） */
+  closeBtn.addEventListener("click", close); /* ×ボタンで閉じる（Escだけだと気づきにくいための明示ボタン） */
 
   document.addEventListener("keydown", function (e) {
     if (e.isComposing || e.keyCode === 229) return; /* IME変換中は一切反応しない（全企画共通鉄則） */
