@@ -554,6 +554,7 @@ let currentIdx = 0;
 let sortMode = 'number'; // 'classification' | 'name' | 'number'
 let searchQuery = '';
 let compFilter = '';
+let persistReligion = function(id) {}; // 状態保持IIFEが実装を差し込む
 let compSortCol = null;
 let compSortAsc = true;
 
@@ -769,6 +770,7 @@ function renderDetail() {
   if (!DATA) return;
   const r = DATA.religions[currentIdx];
   if (!r) return;
+  persistReligion(r.id);
 
   const panel = document.getElementById('detail-inner');
   const color = clsColor(r.classification);
@@ -1385,6 +1387,8 @@ init();
     try { localStorage.setItem(KEY, JSON.stringify(s)); } catch (e) {}
   }
 
+  persistReligion = function(id) { saveState({ religion: id }); };
+
   function scrollTarget() {
     var view = document.querySelector('.view.active');
     if (!view) return null;
@@ -1431,6 +1435,14 @@ init();
     if (s.search) {
       var si = document.getElementById('search-input');
       if (si) { si.value = s.search; onSearch(s.search); }
+    }
+    if (s.religion) {
+      var ri = DATA.religions.findIndex(function(r) { return r.id === s.religion; });
+      if (ri >= 0) {
+        currentIdx = ri;
+        renderSidebar();
+        renderDetail();
+      }
     }
     if (s.tab && s.tab !== 'religion') {
       switchView(s.tab);
