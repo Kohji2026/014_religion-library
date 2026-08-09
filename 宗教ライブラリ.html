@@ -622,8 +622,9 @@ function onSearch(q) {
   if (activeView && activeView.id === 'view-history') applyHistorySearch();
 }
 function clearSearch() {
-  document.getElementById('search-input').value = '';
-  onSearch('');
+  const el = document.getElementById('search-input');
+  el.value = '';
+  el.dispatchEvent(new Event('input', { bubbles: true }));
 }
 function hl(text) {
   if (!searchQuery) return text;
