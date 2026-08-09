@@ -1401,9 +1401,19 @@ init();
     var el = scrollTarget();
     if (el) saveState({ scroll: el.scrollTop });
   }
+  function saveSidebarScroll() {
+    var el = document.getElementById('religion-list');
+    if (el) saveState({ sidebarScroll: el.scrollTop });
+  }
   var scrollTimer = null;
+  var sidebarScrollTimer = null;
   document.addEventListener('scroll', function(e) {
     if (!e.target || !e.target.id) return;
+    if (e.target.id === 'religion-list') {
+      clearTimeout(sidebarScrollTimer);
+      sidebarScrollTimer = setTimeout(saveSidebarScroll, 300);
+      return;
+    }
     if (['detail-panel', 'history-scroll', 'compare-table-wrap'].indexOf(e.target.id) === -1) return;
     clearTimeout(scrollTimer);
     scrollTimer = setTimeout(saveScroll, 300);
@@ -1454,6 +1464,12 @@ init();
       requestAnimationFrame(function() {
         var el = scrollTarget();
         if (el) el.scrollTop = s.scroll;
+      });
+    }
+    if (typeof s.sidebarScroll === 'number') {
+      requestAnimationFrame(function() {
+        var el = document.getElementById('religion-list');
+        if (el) el.scrollTop = s.sidebarScroll;
       });
     }
   }
